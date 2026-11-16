@@ -32,7 +32,9 @@ module Authentication
   def require_login
     return if signed_in?
 
-    redirect_to new_session_path(return_to: request.fullpath), warning: "Entre na sua conta para continuar."
+    # Só volta para páginas GET: voltar para a URL de um formulário (POST) daria 404.
+    return_to = request.get? ? request.fullpath : nil
+    redirect_to new_session_path(return_to: return_to), warning: "Entre na sua conta para continuar."
   end
 
   def require_role!(role)
