@@ -3,3 +3,6 @@
 <% else %>
   <p class="selo">Esgotado</p>
 <% end %>
+<% if current_user&.customer? %>
+  <%= button_to (current_user.favorited?(cupcake) ? "♥ Remover dos favoritos" : "♡ Favoritar"), cupcake_favorite_path(cupcake), class: "btn sec" %>
+<% end %>

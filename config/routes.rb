@@ -5,7 +5,9 @@ Rails.application.routes.draw do
   root "cupcakes#index"
   resources :cupcakes, only: :show, path: "cupcake" do
     resource :image, only: :show, module: :cupcakes, path: "imagem"
+    resource :favorite, only: :create, module: :cupcakes, path: "favorito"
   end
+  resources :favorites, only: :index, path: "favoritos" # US05
 
   # Conta do usuário
   get "entrar" => "sessions#new", as: :new_session
