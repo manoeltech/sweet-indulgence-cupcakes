@@ -9,3 +9,6 @@
 <% else %>
   <%= link_to "Entrar", new_session_path %>
 <% end %>
+<% unless current_user&.admin? || current_user&.courier? %>
+  <%= link_to cart_path, "aria-label": "Carrinho" do %>🛍️<% if cart.count.positive? %><span class="contador" data-teste="contador-carrinho"><%= cart.count %></span><% end %><% end %>
+<% end %>

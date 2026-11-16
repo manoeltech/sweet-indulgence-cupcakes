@@ -1,0 +1,38 @@
+<% content_for :title, "Seu carrinho" %>
+<h1>Seu carrinho</h1>
+<% if cart.empty? %>
+  <div class="vazio"><p>Seu carrinho está vazio.</p><%= link_to "Escolher cupcakes", root_path, class: "btn" %></div>
+<% else %>
+  <div class="duas">
+    <section class="card">
+      <% cart.lines.each do |line| %>
+        <% cupcake = line.cupcake %>
+        <div class="linha-item" data-teste="item-carrinho">
+          <%= image_tag cupcake_image_path(cupcake, format: :svg), alt: "" %>
+          <div class="nome"><b><%= cupcake.name %></b><br><span class="ajuda"><%= brl cupcake.price %> cada</span></div>
+          <div class="qtd">
+            <%= button_to "−", cart_item_path(cupcake), method: :patch, params: { step: "down" }, "aria-label": "Diminuir" %>
+            <span><%= line.quantity %></span>
+            <%= button_to "+", cart_item_path(cupcake), method: :patch, params: { step: "up" }, "aria-label": "Aumentar" %>
+          </div>
+          <b class="valor"><%= brl line.subtotal %></b>
+          <%= button_to "🗑", cart_item_path(cupcake), method: :delete, class: "btn sec pequeno", "aria-label": "Remover #{cupcake.name}" %>
+        </div>
+      <% end %>
+    </section>
+    <aside class="card">
+      <label for="code" style="margin-top:0">Cupom de desconto</label>
+      <% if cart.coupon %>
+        <p class="inline"><span class="status entregue"><%= cart.coupon.code %> (−<%= cart.coupon.percentage %>%)</span>
+          <%= button_to "Remover", cart_coupon_path, method: :delete, class: "btn sec pequeno" %></p>
+      <% else %>
+        <%= form_with url: cart_coupon_path, class: "inline", style: "width:100%" do |f| %>
+          <%= f.text_field :code, id: "code", placeholder: "Ex.: BEMVINDO10", style: "flex:1;width:100%" %>
+          <%= f.button "Aplicar", class: "btn pequeno" %>
+        <% end %>
+      <% end %>
+      <%= render "carts/summary" %>
+      <%= render "carts/next_step" %>
+    </aside>
+  </div>
+<% end %>

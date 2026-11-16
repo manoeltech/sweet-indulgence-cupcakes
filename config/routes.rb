@@ -9,6 +9,14 @@ Rails.application.routes.draw do
   end
   resources :favorites, only: :index, path: "favoritos" # US05
 
+  # Carrinho (US04) e cupom (US06)
+  resource :cart, only: :show, path: "carrinho" do
+    scope module: :carts do
+      resources :items, only: %i[create update destroy], path: "itens"
+      resource :coupon, only: %i[create destroy], path: "cupom"
+    end
+  end
+
   # Conta do usuário
   get "entrar" => "sessions#new", as: :new_session
   post "entrar" => "sessions#create", as: :session
