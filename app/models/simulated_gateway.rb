@@ -22,7 +22,7 @@ class SimulatedGateway
     raise BusinessRuleError, "CVV inválido." unless cvv.match?(/\A\d{3,4}\z/)
 
     month, year = parse_expiry(expiry)
-    raise BusinessRuleError, "Cartão vencido." if [ year, month ] < [ today.year, today.month ]
+    raise BusinessRuleError, "Cartão vencido." if Date.new(year, month).end_of_month < today
     raise BusinessRuleError, "Pagamento recusado pela operadora. Tente outro cartão ou pague com PIX." if number == DECLINED_CARD
 
     number.last(4)
