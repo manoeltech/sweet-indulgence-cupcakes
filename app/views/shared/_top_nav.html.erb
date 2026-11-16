@@ -1,1 +1,8 @@
 <%# Links do cabeçalho; cada área do sistema acrescenta os seus. %>
+<% if signed_in? %>
+  <%= link_to notifications_path, "aria-label": "Notificações" do %>🔔<% if (unread = current_user.unread_notifications_count).positive? %><span class="contador"><%= unread %></span><% end %><% end %>
+  <%= link_to current_user.first_name, profile_path, class: "so-desktop" %>
+  <%= button_to "Sair", logout_path, method: :delete, form_class: "so-desktop" %>
+<% else %>
+  <%= link_to "Entrar", new_session_path %>
+<% end %>

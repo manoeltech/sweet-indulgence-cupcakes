@@ -1,2 +1,3 @@
 <%# Barra inferior do celular (wireframe: Início, Favoritos, Carrinho, Pedidos, Perfil). %>
 <%= tab_link "🏠", "Início", root_path %>
+<%= tab_link "👤", "Perfil", signed_in? ? profile_path : new_session_path, active: controller_name.in?(%w[profiles sessions registrations notifications]) %>
