@@ -30,6 +30,9 @@ Rails.application.routes.draw do
   # Administrador
   namespace :admin do
     root "dashboards#show" # US13
+    resources :cupcakes, except: :show, path: "produtos", path_names: { new: "novo", edit: "editar" } do # US11
+      resource :stock, only: :update, module: :cupcakes, path: "estoque" # US12
+    end
     resources :orders, only: [], path: "pedidos" do
       scope module: :orders do
         resource :status, only: :update            # US13

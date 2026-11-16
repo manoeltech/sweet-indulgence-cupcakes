@@ -1,0 +1,21 @@
+<%= form_with model: [ :admin, cupcake ], class: "card", style: "max-width:720px" do |f| %>
+  <% if cupcake.errors.any? %>
+    <ul class="mensagens"><% cupcake.errors.map(&:message).uniq.each do |message| %><li class="msg-erro"><%= message %></li><% end %></ul>
+  <% end %>
+  <%= f.label :name, "Nome" %><%= f.text_field :name %>
+  <%= f.label :category_id, "Categoria" %>
+  <%= f.collection_select :category_id, Category.order(:name), :id, :name, include_blank: "Selecione…" %>
+  <%= f.label :description, "Descrição" %><%= f.text_area :description, rows: 3 %>
+  <%= f.label :ingredients, "Ingredientes" %><%= f.text_area :ingredients, rows: 2 %>
+  <div class="duas" style="grid-template-columns:repeat(3,1fr);gap:10px">
+    <div><%= f.label :price, "Preço (R$)" %><%= f.text_field :price, inputmode: "decimal", value: cupcake.price_before_type_cast %></div>
+    <div><%= f.label :stock, "Estoque" %><%= f.number_field :stock, min: 0 %></div>
+    <div><%= f.label :min_stock, "Estoque mínimo" %><%= f.number_field :min_stock, min: 0 %></div>
+    <div><%= f.label :calories, "Calorias (kcal)" %><%= f.number_field :calories, min: 0 %></div>
+    <div><%= f.label :fat_grams, "Gorduras (g)" %><%= f.text_field :fat_grams, inputmode: "decimal" %></div>
+    <div><%= f.label :sugar_grams, "Açúcares (g)" %><%= f.text_field :sugar_grams, inputmode: "decimal" %></div>
+  </div>
+  <%= f.label :allergens, "Alérgenos (separados por vírgula)" %><%= f.text_field :allergens, placeholder: "Glúten, Lactose, Ovo" %>
+  <%= f.label :color, "Cor da cobertura (ilustração)" %><%= f.color_field :color, style: "width:80px;height:44px;padding:4px" %>
+  <p style="display:flex;gap:8px;margin-top:16px"><%= f.button "Salvar", class: "btn" %><%= link_to "Cancelar", admin_cupcakes_path, class: "btn sec" %></p>
+<% end %>

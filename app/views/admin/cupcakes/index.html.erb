@@ -1,0 +1,30 @@
+<% content_for :title, "Produtos" %>
+<%= render "admin/nav" %>
+<h1 class="inline" style="justify-content:space-between;width:100%">Produtos e estoque <%= link_to "+ Novo cupcake", new_admin_cupcake_path, class: "btn pequeno" %></h1>
+<div class="tabela"><table>
+  <tr><th></th><th>Cupcake</th><th>Preço</th><th>Estoque</th><th>Ações</th></tr>
+  <% @cupcakes.each do |cupcake| %>
+    <tr style="<%= "opacity:.55" unless cupcake.active? %>" data-teste="produto-<%= cupcake.id %>">
+      <td><%= image_tag cupcake_image_path(cupcake, format: :svg), alt: "", width: 48, height: 48, style: "border-radius:8px" %></td>
+      <td><b><%= cupcake.name %></b><br><span class="ajuda"><%= cupcake.category.name %><%= " · fora do cardápio" unless cupcake.active? %></span></td>
+      <td><%= brl cupcake.price %></td>
+      <td>
+        <%= form_with url: admin_cupcake_stock_path(cupcake), method: :patch, class: "inline" do |f| %>
+          <%= f.number_field :stock, value: cupcake.stock, min: 0, style: "width:80px", "aria-label": "Estoque de #{cupcake.name}" %>
+          <%= f.button "Salvar", class: "btn sec pequeno" %>
+        <% end %>
+        <% if cupcake.active? && cupcake.low_stock? %><span class="selo">⚠️ abaixo do mínimo (<%= cupcake.min_stock %>)</span><% end %>
+      </td>
+      <td>
+        <%= link_to "Editar", edit_admin_cupcake_path(cupcake), class: "btn sec pequeno" %>
+        <% if cupcake.active? %>
+          <%= form_with url: admin_cupcake_path(cupcake), method: :delete, style: "display:inline",
+                data: { prompt_confirmation: "Para remover, digite o nome do cupcake: #{cupcake.name}" } do |f| %>
+            <%= f.hidden_field :confirmation %>
+            <%= f.button "Remover", class: "btn perigo pequeno" %>
+          <% end %>
+        <% end %>
+      </td>
+    </tr>
+  <% end %>
+</table></div>
