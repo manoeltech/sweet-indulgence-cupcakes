@@ -1,28 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
   <head>
-    <title><%= content_for(:title) || "Rails App" %></title>
+    <title><%= [ content_for(:title), "Sweet Indulgence Cupcakes" ].compact.join(" · ") %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Rails App">
+    <meta name="application-name" content="Sweet Indulgence">
     <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-
-    <%= yield :head %>
-
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
-
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🧁%3C/text%3E%3C/svg%3E">
     <%= stylesheet_link_tag :app %>
+    <%= javascript_include_tag "application", defer: true %>
   </head>
 
   <body>
-    <%= yield %>
+    <header class="topo">
+      <div class="wrap">
+        <%= link_to root_path, class: "logo" do %><b>Sweet Indulgence</b><small>CUPCAKES</small><% end %>
+        <nav><%= render "shared/top_nav" %></nav>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <% if flash.any? %>
+        <ul class="mensagens">
+          <% flash.each do |type, message| %><li class="<%= flash_class(type) %>" role="status"><%= message %></li><% end %>
+        </ul>
+      <% end %>
+      <%= yield %>
+    </main>
+
+    <footer><div class="wrap">Sweet Indulgence Cupcakes · Projeto Integrador Transdisciplinar em Engenharia de Software II · Manoel Pereira Neto</div></footer>
+
+    <nav class="barra"><%= render "shared/tab_bar" %></nav>
   </body>
 </html>
