@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block titulo %}Finalizar pedido · Sweet Indulgence{% endblock %}
+{% block conteudo %}
+<h1>Finalizar pedido</h1>
+<form method="post" class="duas" id="checkout" novalidate>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <div>
+    <section class="card">
+      <h2 style="margin-top:0">1. Como quer receber?</h2>
+      <div class="opcoes">
+        <label><input type="radio" name="metodo_entrega" value="entrega" {{ 'checked' if dados.get('metodo_entrega', 'entrega') == 'entrega' }}>🛵 Entrega em casa</label>
+        <label><input type="radio" name="metodo_entrega" value="retirada" {{ 'checked' if dados.get('metodo_entrega') == 'retirada' }}>🏪 Retirar na loja</label>
+      </div>
+      <div id="bloco-entrega">
+        <label for="zona_id">Bairro / zona de entrega</label>
+        <select id="zona_id" name="zona_id">
+          <option value="">Selecione…</option>
+          {% for z in zonas %}<option value="{{ z.id }}" data-taxa="{{ z.taxa }}" {{ 'selected' if dados.get('zona_id') == z.id|string }}>{{ z.nome }} — {{ z.taxa|brl }} (~{{ z.prazo_min }} min)</option>{% endfor %}
+        </select>
+        {% if usuario_atual.enderecos %}
+        <label for="endereco_salvo">Endereço salvo</label>
+        <select id="endereco_salvo" name="endereco_salvo">
+          <option value="">Digitar outro endereço</option>
+          {% for e in usuario_atual.enderecos %}<option value="{{ e.id }}">{{ e }}</option>{% endfor %}
+        </select>
+        {% endif %}
+        <label for="endereco">Endereço completo</label>
+        <input id="endereco" name="endereco" value="{{ dados.get('endereco', '') }}" placeholder="Rua, número, bairro, CEP" autocomplete="street-address">
+      </div>
+      <div id="bloco-retirada" class="oculto">
+        <p><b>Sweet Indulgence Cupcakes</b><br>Rua das Confeitarias, 100 – Centro</p>
+        <p class="ajuda">Seu pedido fica pronto em cerca de {{ tempo_retirada }} minutos após a confirmação do pagamento.</p>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:16px">
+      <h2 style="margin-top:0">2. Pagamento</h2>
+      <div class="opcoes">
+        <label><input type="radio" name="metodo_pagamento" value="credito" {{ 'checked' if dados.get('metodo_pagamento', 'credito') == 'credito' }}>💳 Crédito</label>
+        <label><input type="radio" name="metodo_pagamento" value="debito" {{ 'checked' if dados.get('metodo_pagamento') == 'debito' }}>💳 Débito</label>
+        <label><input type="radio" name="metodo_pagamento" value="pix" {{ 'checked' if dados.get('metodo_pagamento') == 'pix' }}>⚡ PIX</label>
+      </div>
+      <div id="bloco-cartao">
+        <label for="cartao_numero">Número do cartão</label>
+        <input id="cartao_numero" name="cartao_numero" inputmode="numeric" autocomplete="cc-number" placeholder="0000 0000 0000 0000">
+        <label for="cartao_nome">Nome impresso</label>
+        <input id="cartao_nome" name="cartao_nome" autocomplete="cc-name" value="{{ dados.get('cartao_nome', '') }}">
+        <div class="duas" style="grid-template-columns:1fr 1fr;gap:10px">
+          <div><label for="cartao_validade">Validade</label><input id="cartao_validade" name="cartao_validade" placeholder="MM/AA" autocomplete="cc-exp" value="{{ dados.get('cartao_validade', '') }}"></div>
+          <div><label for="cartao_cvv">CVV</label><input id="cartao_cvv" name="cartao_cvv" inputmode="numeric" autocomplete="cc-csc" maxlength="4"></div>
+        </div>
+        <p class="ajuda">Ambiente de demonstração: use o cartão 4111 1111 1111 1111 (aprovado) ou 4000 0000 0000 0002 (recusado). Não digite um cartão real.</p>
+      </div>
+      <div id="bloco-pix" class="oculto"><p class="ajuda">O código PIX “copia e cola” aparece na próxima tela.</p></div>
+    </section>
+  </div>
+
+  <aside class="card" style="align-self:start">
+    <h2 style="margin-top:0">Resumo</h2>
+    {% for item in r.itens %}<p style="margin:4px 0">{{ item.quantidade }}× {{ item.cupcake.nome }} <span style="float:right">{{ item.subtotal|brl }}</span></p>{% endfor %}
+    <table class="resumo" style="margin-top:10px;background:none">
+      <tr><td>Subtotal</td><td style="text-align:right">{{ r.subtotal|brl }}</td></tr>
+      {% if r.cupom %}<tr><td>Cupom {{ r.cupom.codigo }}</td><td style="text-align:right">− {{ r.desconto|brl }}</td></tr>{% endif %}
+      {% if r.erro_cupom %}<tr><td colspan="2" class="msg-erro">{{ r.erro_cupom }}</td></tr>{% endif %}
+      <tr><td>Frete</td><td style="text-align:right" id="frete">—</td></tr>
+      <tr class="total"><td>Total</td><td style="text-align:right" id="total" data-base="{{ r.total }}">{{ r.total|brl }}</td></tr>
+    </table>
+    <button class="btn bloco" style="margin-top:14px">Finalizar pedido</button>
+  </aside>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+  const f = document.getElementById('checkout');
+  const brl = v => v.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
+  function atualizar() {
+    const entrega = f.metodo_entrega.value === 'entrega';
+    document.getElementById('bloco-entrega').classList.toggle('oculto', !entrega);
+    document.getElementById('bloco-retirada').classList.toggle('oculto', entrega);
+    const pix = f.metodo_pagamento.value === 'pix';
+    document.getElementById('bloco-cartao').classList.toggle('oculto', pix);
+    document.getElementById('bloco-pix').classList.toggle('oculto', !pix);
+    const opt = f.zona_id.selectedOptions[0];
+    const taxa = entrega && opt && opt.dataset.taxa ? parseFloat(opt.dataset.taxa) : 0;
+    document.getElementById('frete').textContent = entrega ? (opt && opt.dataset.taxa ? brl(taxa) : 'escolha o bairro') : 'Grátis';
+    document.getElementById('total').textContent = brl(parseFloat(document.getElementById('total').dataset.base) + taxa);
+  }
+  f.addEventListener('change', atualizar);
+  const salvo = document.getElementById('endereco_salvo');
+  if (salvo) salvo.addEventListener('change', () => { document.getElementById('endereco').disabled = !!salvo.value; });
+  atualizar();
+</script>
+{% endblock %}

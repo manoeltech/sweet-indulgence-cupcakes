@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Sweet Indulgence Cupcakes{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🧁%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+<header class="topo">
+  <div class="wrap">
+    <a class="logo" href="{{ url_for('loja.vitrine') }}"><b>Sweet Indulgence</b><small>CUPCAKES</small></a>
+    <nav>
+      {% if usuario_atual and usuario_atual.admin %}
+        <a class="so-desktop" href="{{ url_for('admin.dashboard') }}">Painel</a>
+      {% elif usuario_atual and usuario_atual.entregador %}
+        <a class="so-desktop" href="{{ url_for('entregador.entregas') }}">Minhas entregas</a>
+      {% else %}
+        <a class="so-desktop" href="{{ url_for('loja.favoritos') }}">Favoritos</a>
+        <a class="so-desktop" href="{{ url_for('pedidos.meus_pedidos') }}">Pedidos</a>
+      {% endif %}
+      {% if usuario_atual %}
+        <a href="{{ url_for('auth.notificacoes') }}" aria-label="Notificações">🔔{% if notificacoes_nao_lidas %}<span class="contador">{{ notificacoes_nao_lidas }}</span>{% endif %}</a>
+        <a class="so-desktop" href="{{ url_for('auth.perfil') }}">{{ usuario_atual.nome.split()[0] }}</a>
+        <form class="so-desktop" method="post" action="{{ url_for('auth.sair') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button>Sair</button></form>
+      {% else %}
+        <a href="{{ url_for('auth.entrar') }}">Entrar</a>
+      {% endif %}
+      {% if not (usuario_atual and (usuario_atual.admin or usuario_atual.entregador)) %}
+        <a href="{{ url_for('carrinho.ver') }}" aria-label="Carrinho">🛍️{% if itens_no_carrinho %}<span class="contador" data-teste="contador-carrinho">{{ itens_no_carrinho }}</span>{% endif %}</a>
+      {% endif %}
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  {% with mensagens = get_flashed_messages(with_categories=true) %}
+    {% if mensagens %}<ul class="mensagens">{% for cat, msg in mensagens %}<li class="msg-{{ cat }}" role="status">{{ msg }}</li>{% endfor %}</ul>{% endif %}
+  {% endwith %}
+  {% block conteudo %}{% endblock %}
+</main>
+
+<footer><div class="wrap">Sweet Indulgence Cupcakes · Projeto Integrador Transdisciplinar em Engenharia de Software II · Manoel Pereira Neto</div></footer>
+
+{% set ep = request.endpoint or '' %}
+<nav class="barra">
+  {% if usuario_atual and usuario_atual.admin %}
+    <a href="{{ url_for('admin.dashboard') }}" class="{{ 'ativo' if ep == 'admin.dashboard' }}"><span>📋</span>Pedidos</a>
+    <a href="{{ url_for('admin.produtos') }}" class="{{ 'ativo' if ep.startswith('admin.produto') }}"><span>🧁</span>Produtos</a>
+    <a href="{{ url_for('admin.cupons') }}" class="{{ 'ativo' if ep == 'admin.cupons' }}"><span>🏷️</span>Cupons</a>
+    <a href="{{ url_for('admin.relatorios') }}" class="{{ 'ativo' if ep == 'admin.relatorios' }}"><span>📊</span>Relatórios</a>
+    <a href="{{ url_for('auth.perfil') }}" class="{{ 'ativo' if ep == 'auth.perfil' }}"><span>👤</span>Perfil</a>
+  {% elif usuario_atual and usuario_atual.entregador %}
+    <a href="{{ url_for('entregador.entregas') }}" class="{{ 'ativo' if ep.startswith('entregador') }}"><span>🛵</span>Entregas</a>
+    <a href="{{ url_for('auth.perfil') }}" class="{{ 'ativo' if ep == 'auth.perfil' }}"><span>👤</span>Perfil</a>
+  {% else %}
+    <a href="{{ url_for('loja.vitrine') }}" class="{{ 'ativo' if ep == 'loja.vitrine' }}"><span>🏠</span>Início</a>
+    <a href="{{ url_for('loja.favoritos') }}" class="{{ 'ativo' if ep == 'loja.favoritos' }}"><span>♡</span>Favoritos</a>
+    <a href="{{ url_for('carrinho.ver') }}" class="{{ 'ativo' if ep.startswith('carrinho') }}"><span>🛍️</span>Carrinho</a>
+    <a href="{{ url_for('pedidos.meus_pedidos') }}" class="{{ 'ativo' if ep.startswith('pedidos') }}"><span>📦</span>Pedidos</a>
+    <a href="{{ url_for('auth.perfil') if usuario_atual else url_for('auth.entrar') }}" class="{{ 'ativo' if ep.startswith('auth') }}"><span>👤</span>Perfil</a>
+  {% endif %}
+</nav>
+{% block scripts %}{% endblock %}
+</body>
+</html>

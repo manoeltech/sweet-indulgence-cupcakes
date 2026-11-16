@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block conteudo %}
+<h1>Meus favoritos</h1>
+{% if favoritos %}<div class="grade">{% for f in favoritos %}{% set c = f.cupcake %}{% if c.ativo %}{% include "loja/_card.html" %}{% endif %}{% endfor %}</div>
+{% else %}<div class="vazio"><p>Você ainda não favoritou nenhum cupcake. Toque no ♡ para guardar os seus preferidos.</p><a class="btn" href="{{ url_for('loja.vitrine') }}">Ver vitrine</a></div>{% endif %}
+{% endblock %}

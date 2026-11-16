@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block conteudo %}
+<p><a href="{{ url_for('pedidos.meus_pedidos') }}">← Meus pedidos</a></p>
+<h1>Pedido #{{ pedido.codigo }} <span class="status {{ pedido.status }}">{{ pedido.status_legivel }}</span></h1>
+<div class="duas">
+  <section class="card">
+    {% if pedido.status == 'cancelado' %}
+      <p>Este pedido foi cancelado.</p>
+    {% elif pedido.status == 'aguardando_pagamento' %}
+      <p>Aguardando o pagamento PIX. <a href="{{ url_for('pedidos.confirmacao', codigo=pedido.codigo) }}">Ver código PIX</a></p>
+    {% else %}
+      {% set atual = pedido.etapas.index(pedido.status) if pedido.status in pedido.etapas else 0 %}
+      <ul class="timeline">
+        {% for etapa in pedido.etapas %}<li class="{{ 'feito' if loop.index0 <= atual }}">{{ pedido.STATUS[etapa] }}</li>{% endfor %}
+      </ul>
+      {% if pedido.status == 'saiu_para_entrega' and pedido.entregador %}<p>🛵 {{ pedido.entregador.nome }} está a caminho.</p>{% endif %}
+      {% if pedido.metodo_entrega == 'retirada' and pedido.status != 'entregue' %}<p class="ajuda">Retirada na loja: Rua das Confeitarias, 100 – Centro (~{{ tempo_retirada }} min após a confirmação).</p>{% endif %}
+    {% endif %}
+    <p class="ajuda">Atualizado em {{ pedido.atualizado_em|data }}. As mudanças também chegam nas suas 🔔 notificações.</p>
+  </section>
+  <aside class="card">
+    {% for item in pedido.itens %}<p style="margin:4px 0">{{ item.quantidade }}× {{ item.cupcake.nome }} <span style="float:right">{{ item.subtotal|brl }}</span></p>{% endfor %}
+    <table class="resumo" style="margin-top:10px;background:none">
+      <tr><td>Subtotal</td><td style="text-align:right">{{ pedido.subtotal|brl }}</td></tr>
+      {% if pedido.desconto|float > 0 %}<tr><td>Desconto ({{ pedido.cupom.codigo }})</td><td style="text-align:right">− {{ pedido.desconto|brl }}</td></tr>{% endif %}
+      <tr><td>Frete</td><td style="text-align:right">{{ pedido.frete|brl }}</td></tr>
+      <tr class="total"><td>Total</td><td style="text-align:right">{{ pedido.total|brl }}</td></tr>
+    </table>
+    <p class="ajuda">{{ 'Entrega: ' ~ pedido.endereco_entrega if pedido.metodo_entrega == 'entrega' else 'Retirada na loja' }}</p>
+  </aside>
+</div>
+
+{% if pedido.status == 'entregue' %}
+<h2>Avalie seu pedido</h2>
+{% for item in pedido.itens %}
+  {% if item.cupcake_id in avaliados %}
+    <p class="card">✅ {{ item.cupcake.nome }} já avaliado. Obrigado!</p>
+  {% else %}
+  <form class="card" method="post" action="{{ url_for('pedidos.avaliar', codigo=pedido.codigo, cupcake_id=item.cupcake_id) }}" style="margin-bottom:10px">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <b>{{ item.cupcake.nome }}</b>
+    <div class="duas" style="grid-template-columns:1fr 1fr;gap:10px">
+      <div><label>Cupcake</label><div class="estrelas">{% for n in range(5, 0, -1) %}<input type="radio" id="n{{ item.id }}-{{ n }}" name="nota" value="{{ n }}"><label for="n{{ item.id }}-{{ n }}">★</label>{% endfor %}</div></div>
+      <div><label>Entrega</label><div class="estrelas">{% for n in range(5, 0, -1) %}<input type="radio" id="e{{ item.id }}-{{ n }}" name="nota_entrega" value="{{ n }}"><label for="e{{ item.id }}-{{ n }}">★</label>{% endfor %}</div></div>
+    </div>
+    <label for="c{{ item.id }}">Comentário (opcional)</label>
+    <textarea id="c{{ item.id }}" name="comentario" rows="2"></textarea>
+    <button class="btn pequeno" style="margin-top:8px">Enviar avaliação</button>
+  </form>
+  {% endif %}
+{% endfor %}
+{% endif %}
+{% endblock %}

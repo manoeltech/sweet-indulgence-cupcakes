@@ -1,0 +1,18 @@
+<article class="produto" data-teste="produto">
+  <a class="foto" href="{{ url_for('loja.detalhe', cupcake_id=c.id) }}"><img src="{{ url_for('loja.imagem', cupcake_id=c.id) }}" alt="{{ c.nome }}" width="200" height="200" loading="lazy"></a>
+  {% if usuario_atual and not usuario_atual.admin and not usuario_atual.entregador %}
+  <form class="coracao" method="post" action="{{ url_for('loja.alternar_favorito', cupcake_id=c.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="voltar" value="{{ request.full_path }}">
+    <button aria-label="Favoritar">{{ '♥' if usuario_atual.favoritou(c) else '♡' }}</button>
+  </form>
+  {% endif %}
+  <div class="info">
+    <a href="{{ url_for('loja.detalhe', cupcake_id=c.id) }}">{{ c.nome }}</a>
+    <span class="preco">{{ c.preco|brl }}</span>
+    {% if c.estoque <= c.estoque_minimo %}<span class="selo">Últimas {{ c.estoque }} unidades</span>{% endif %}
+    <form method="post" action="{{ url_for('carrinho.adicionar', cupcake_id=c.id) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <button class="btn pequeno bloco">Adicionar ao carrinho</button>
+    </form>
+  </div>
+</article>

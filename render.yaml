@@ -1,0 +1,22 @@
+# Blueprint do Render: aplicação web (Flask + Gunicorn) e banco PostgreSQL gratuitos.
+services:
+  - type: web
+    name: sweet-indulgence-cupcakes
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    # "popular" cria as tabelas e só insere os dados de demonstração se o banco estiver vazio.
+    startCommand: flask --app wsgi popular && gunicorn wsgi:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sweet-indulgence-db
+          property: connectionString
+
+databases:
+  - name: sweet-indulgence-db
+    plan: free

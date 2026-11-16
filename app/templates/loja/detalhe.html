@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block titulo %}{{ cupcake.nome }} · Sweet Indulgence{% endblock %}
+{% block conteudo %}
+<p><a href="{{ url_for('loja.vitrine') }}">← Voltar à vitrine</a></p>
+<div class="detalhe">
+  <div class="foto"><img src="{{ url_for('loja.imagem', cupcake_id=cupcake.id) }}" alt="{{ cupcake.nome }}" width="480" height="480"></div>
+  <div>
+    <p class="ajuda" style="margin:0">{{ cupcake.categoria.nome }}</p>
+    <h1 style="margin-bottom:4px">{{ cupcake.nome }}</h1>
+    <p class="preco" style="font-size:1.4rem;margin:0 0 10px">{{ cupcake.preco|brl }}</p>
+    {% if cupcake.nota_media %}<p class="ajuda">★ {{ cupcake.nota_media }} ({{ cupcake.avaliacoes|length }} avaliação(ões))</p>{% endif %}
+    <p>{{ cupcake.descricao }}</p>
+    {% if cupcake.estoque > 0 %}
+    <form method="post" action="{{ url_for('carrinho.adicionar', cupcake_id=cupcake.id) }}" class="inline" style="margin:8px 0 6px">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <label for="qtd" style="margin:0">Qtd.</label>
+      <input id="qtd" type="number" name="quantidade" value="1" min="1" max="{{ cupcake.estoque }}" style="width:80px">
+      <button class="btn">Adicionar ao carrinho</button>
+    </form>
+    <p class="ajuda">{{ cupcake.estoque }} em estoque</p>
+    {% else %}<p class="selo">Esgotado</p>{% endif %}
+    {% if usuario_atual and not usuario_atual.admin and not usuario_atual.entregador %}
+    <form method="post" action="{{ url_for('loja.alternar_favorito', cupcake_id=cupcake.id) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <button class="btn sec">{{ '♥ Remover dos favoritos' if usuario_atual.favoritou(cupcake) else '♡ Favoritar' }}</button>
+    </form>
+    {% endif %}
+
+    <h2>Alérgenos</h2>
+    {% if cupcake.lista_alergenos %}<div class="tags">{% for a in cupcake.lista_alergenos %}<span class="tag">{{ a }}</span>{% endfor %}</div>
+    {% else %}<p class="ajuda">Nenhum alérgeno informado.</p>{% endif %}
+
+    <h2>Informação nutricional <span class="ajuda">(1 unidade)</span></h2>
+    <table class="resumo" style="background:none">
+      <tr><td>Calorias</td><td>{{ cupcake.calorias or '–' }} kcal</td></tr>
+      <tr><td>Gorduras totais</td><td>{{ cupcake.gorduras_g or '–' }} g</td></tr>
+      <tr><td>Açúcares</td><td>{{ cupcake.acucares_g or '–' }} g</td></tr>
+    </table>
+    <h2>Ingredientes</h2><p>{{ cupcake.ingredientes }}</p>
+  </div>
+</div>
+{% if cupcake.avaliacoes %}
+<h2>O que os clientes acharam</h2>
+{% for a in cupcake.avaliacoes[-5:]|reverse %}<div class="card" style="margin-bottom:8px"><b>{{ '★' * a.nota }}</b> · {{ a.usuario.nome.split()[0] }}<br>{{ a.comentario }}</div>{% endfor %}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block conteudo %}
+<p><a href="{{ url_for('entregador.entregas') }}">← Minhas entregas</a></p>
+<h1>Pedido #{{ pedido.codigo }}</h1>
+<div class="card">
+  <p><b>{{ pedido.cliente.nome }}</b><br>📍 {{ pedido.endereco_entrega }}<br>📞 {{ pedido.cliente.telefone or 'sem telefone' }}</p>
+  <p>{% for i in pedido.itens %}{{ i.quantidade }}× {{ i.cupcake.nome }}<br>{% endfor %}</p>
+  <p class="ajuda">Pagamento: {{ 'PIX' if pedido.metodo_pagamento == 'pix' else 'Cartão' }} (já pago no app)</p>
+  <p style="display:flex;gap:8px;flex-wrap:wrap">
+    <a class="btn sec" href="{{ mapa }}" target="_blank" rel="noopener">🗺️ Abrir no GPS</a>
+    <form method="post" action="{{ url_for('entregador.contato', codigo=pedido.codigo) }}" style="display:inline">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="btn sec" name="meio" value="ligacao">📞 Ligar</button>
+      <button class="btn sec" name="meio" value="whatsapp">💬 WhatsApp</button>
+    </form>
+  </p>
+</div>
+<form method="post" action="{{ url_for('entregador.marcar_entregue', codigo=pedido.codigo) }}" class="card" style="margin-top:14px">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <label class="inline" style="font-weight:600"><input type="checkbox" name="confirmado" value="1" style="width:auto"> O cliente recebeu e conferiu o pedido</label>
+  <button class="btn bloco" style="margin-top:12px">✅ Marcar como entregue</button>
+</form>
+{% endblock %}
