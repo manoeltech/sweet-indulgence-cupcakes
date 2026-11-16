@@ -20,13 +20,15 @@ class Admin::CupcakesTest < ActionDispatch::IntegrationTest
 
   test "dados inválidos mostram os erros e mantêm o que foi digitado (CU02-A)" do
     assert_no_difference -> { Cupcake.count } do
-      post admin_cupcakes_path, params: valid_params(name: "", price: "0", stock: "-3")
+      post admin_cupcakes_path, params: valid_params(name: "", price: "0", stock: "-3", category_id: "")
     end
 
     assert_response :unprocessable_entity
     assert_select ".msg-erro", "Informe o nome do cupcake."
     assert_select ".msg-erro", "O preço precisa ser maior que zero."
     assert_select ".msg-erro", "O estoque não pode ser negativo."
+    assert_select ".msg-erro", "Escolha uma categoria."
+    assert_select ".msg-erro", text: "é obrigatório(a)", count: 0
     assert_select "textarea[name='cupcake[description]']", "Creme de pistache."
   end
 

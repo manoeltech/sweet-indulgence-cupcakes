@@ -1,8 +1,10 @@
 class Cupcake < ApplicationRecord
-  belongs_to :category
+  # A mensagem padrão do belongs_to ("é obrigatório(a)") não diz qual campo falta.
+  belongs_to :category, optional: true
   has_many :reviews, dependent: :destroy
   has_many :order_items, dependent: :restrict_with_error
 
+  validates :category, presence: { message: "Escolha uma categoria." }
   validates :name, presence: { message: "Informe o nome do cupcake." }
   validates :description, presence: { message: "Informe a descrição." }
   validates :price, numericality: { greater_than: 0, message: "O preço precisa ser maior que zero." }
