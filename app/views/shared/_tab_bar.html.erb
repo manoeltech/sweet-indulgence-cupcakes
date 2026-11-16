@@ -2,4 +2,5 @@
 <%= tab_link "🏠", "Início", root_path %>
 <%= tab_link "♡", "Favoritos", favorites_path %>
 <%= tab_link "🛍️", "Carrinho", cart_path %>
+<%= tab_link "📦", "Pedidos", orders_path, active: controller_path.start_with?("orders") %>
 <%= tab_link "👤", "Perfil", signed_in? ? profile_path : new_session_path, active: controller_name.in?(%w[profiles sessions registrations notifications]) %>

@@ -19,10 +19,11 @@ Rails.application.routes.draw do
 
   # Checkout (CU01: US07 entrega/retirada, US08 pagamento)
   resource :checkout, only: %i[new create], path: "finalizar", path_names: { new: "pedido" }
-  resources :orders, only: [], path: "pedido" do
+  resources :orders, only: %i[index show], path: "pedidos" do # acompanhamento (US09)
     scope module: :orders do
       resource :confirmation, only: :show, path: "confirmacao"
       resource :pix_payment, only: :create, path: "pix"
+      resources :reviews, only: :create, path: "avaliacoes" # US10
     end
   end
 
