@@ -40,7 +40,7 @@
                   form: { style: "margin:2px 0", data: ({ confirm: "Cancelar o pedido ##{order.code}? O estoque será devolvido." } if next_status == "canceled") } %>
           <% end %>
           <% if order.delivery? && (order.paid? || order.preparing?) %>
-            <%= form_with url: admin_order_courier_path(order), method: :patch, class: "inline", style: "margin-top:4px" do |f| %>
+            <%= form_with url: admin_order_courier_path(order), method: :patch, class: "inline", html: { style: "margin-top:4px" } do |f| %>
               <%= f.select :courier_id, @couriers.map { |c| [ c.name, c.id ] }, { selected: order.courier_id }, "aria-label": "Entregador" %>
               <%= f.button "Atribuir", class: "btn sec pequeno" %>
             <% end %>

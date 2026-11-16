@@ -1,4 +1,4 @@
-<%= form_with model: [ :admin, cupcake ], class: "card", style: "max-width:720px" do |f| %>
+<%= form_with model: [ :admin, cupcake ], class: "card", html: { style: "max-width:720px" } do |f| %>
   <% if cupcake.errors.any? %>
     <ul class="mensagens"><% cupcake.errors.map(&:message).uniq.each do |message| %><li class="msg-erro"><%= message %></li><% end %></ul>
   <% end %>

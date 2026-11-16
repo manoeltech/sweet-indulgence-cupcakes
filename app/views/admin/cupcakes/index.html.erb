@@ -18,7 +18,7 @@
       <td>
         <%= link_to "Editar", edit_admin_cupcake_path(cupcake), class: "btn sec pequeno" %>
         <% if cupcake.active? %>
-          <%= form_with url: admin_cupcake_path(cupcake), method: :delete, style: "display:inline",
+          <%= form_with url: admin_cupcake_path(cupcake), method: :delete, html: { style: "display:inline" },
                 data: { prompt_confirmation: "Para remover, digite o nome do cupcake: #{cupcake.name}" } do |f| %>
             <%= f.hidden_field :confirmation %>
             <%= f.button "Remover", class: "btn perigo pequeno" %>
