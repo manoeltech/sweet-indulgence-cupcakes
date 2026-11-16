@@ -114,3 +114,8 @@ th{background:var(--rosa-claro);font-size:.82rem;text-transform:uppercase;letter
 .estrelas input:checked ~ label,.estrelas label:hover,.estrelas label:hover ~ label{color:#f59e0b}
 .ajuda{color:var(--suave);font-size:.85rem}
 footer{border-top:1px solid var(--linha);color:var(--suave);font-size:.82rem;padding:18px 0}
+/* Botões de ação (button_to) vêm dentro de um <form>: o form não pode quebrar a linha. */
+.qtd form,.inline form,.linha-item > form{display:contents}
+.linha-item{flex-wrap:wrap}
+.linha-item .valor{min-width:84px;text-align:right}
+@media (max-width:520px){.linha-item .nome{flex:1 1 calc(100% - 90px)}.linha-item .valor{min-width:0;margin-left:auto}}
