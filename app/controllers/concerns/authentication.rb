@@ -62,7 +62,7 @@ module Authentication
     path if path.start_with?("/") && !path.start_with?("//")
   end
 
-  def home_path_for(_user)
-    root_path
+  def home_path_for(user)
+    user.admin? ? admin_root_path : root_path
   end
 end

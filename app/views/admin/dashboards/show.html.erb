@@ -1,0 +1,54 @@
+<% content_for :title, "Painel" %>
+<%= render "admin/nav" %>
+<h1>Painel de pedidos</h1>
+<div class="cards">
+  <div class="card"><b><%= brl @sales_today %></b><span>Vendas de hoje</span></div>
+  <div class="card"><b><%= @counts.fetch("paid", 0) %></b><span>Pendentes</span></div>
+  <div class="card"><b><%= @counts.fetch("preparing", 0) %></b><span>Em preparação</span></div>
+  <div class="card"><b><%= @counts.fetch("out_for_delivery", 0) %></b><span>Em entrega</span></div>
+</div>
+<% if @low_stock.any? %>
+  <ul class="mensagens"><li class="msg-aviso">⚠️ Estoque baixo: <%= @low_stock.map { |c| "#{c.name} (#{c.stock})" }.join(", ") %>.
+    <%= render "admin/dashboards/restock_link" %></li></ul>
+<% end %>
+<div class="filtros">
+  <%= link_to "Ativos", admin_root_path, class: ("ativo" if @filter == "active") %>
+  <% Admin::DashboardsController::FILTERS.each do |status, label| %>
+    <%= link_to "#{label} (#{@counts.fetch(status, 0)})", admin_root_path(status: status), class: ("ativo" if @filter == status) %>
+  <% end %>
+</div>
+<% if @orders.any? %>
+  <div class="tabela"><table>
+    <tr><th>Pedido</th><th>Cliente</th><th>Itens</th><th>Recebimento</th><th>Total</th><th>Status</th><th>Ações</th></tr>
+    <% @orders.each do |order| %>
+      <tr data-teste="pedido-<%= order.code %>">
+        <td><b>#<%= order.code %></b><br><span class="ajuda"><%= l order.created_at %></span></td>
+        <td><%= order.customer.name %></td>
+        <td><% order.items.each do |item| %><%= item.quantity %>× <%= item.cupcake.name %><br><% end %></td>
+        <td>
+          <% if order.delivery? %>🛵 <%= order.delivery_address %>
+            <% if order.courier %><br><b>Entregador:</b> <%= order.courier.name %><% end %>
+          <% else %>🏪 Retirada<% end %>
+        </td>
+        <td><%= brl order.total %><br><span class="ajuda"><%= order.payment_label %></span></td>
+        <td><span class="status <%= order.status %>"><%= order.status_label %></span></td>
+        <td>
+          <% order.next_statuses.each do |next_status| %>
+            <%= button_to "→ #{Order::STATUS_LABELS[next_status]}", admin_order_status_path(order), method: :patch,
+                  params: { status: next_status },
+                  class: "btn pequeno #{next_status == 'canceled' ? 'perigo' : ('sec' unless next_status == 'delivered')}",
+                  form: { style: "margin:2px 0", data: ({ confirm: "Cancelar o pedido ##{order.code}? O estoque será devolvido." } if next_status == "canceled") } %>
+          <% end %>
+          <% if order.delivery? && (order.paid? || order.preparing?) %>
+            <%= form_with url: admin_order_courier_path(order), method: :patch, class: "inline", style: "margin-top:4px" do |f| %>
+              <%= f.select :courier_id, @couriers.map { |c| [ c.name, c.id ] }, { selected: order.courier_id }, "aria-label": "Entregador" %>
+              <%= f.button "Atribuir", class: "btn sec pequeno" %>
+            <% end %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </table></div>
+<% else %>
+  <div class="vazio">Nenhum pedido neste filtro.</div>
+<% end %>

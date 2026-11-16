@@ -27,6 +27,17 @@ Rails.application.routes.draw do
     end
   end
 
+  # Administrador
+  namespace :admin do
+    root "dashboards#show" # US13
+    resources :orders, only: [], path: "pedidos" do
+      scope module: :orders do
+        resource :status, only: :update            # US13
+        resource :courier, only: :update, path: "entregador" # US14
+      end
+    end
+  end
+
   # Conta do usuário
   get "entrar" => "sessions#new", as: :new_session
   post "entrar" => "sessions#create", as: :session
