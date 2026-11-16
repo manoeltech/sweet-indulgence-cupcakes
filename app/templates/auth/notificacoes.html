@@ -1,7 +1,0 @@
-{% extends "base.html" %}
-{% block conteudo %}
-<h1>Notificações</h1>
-{% for n in notificacoes %}
-<div class="card" style="margin-bottom:8px">{{ n.mensagem }}<br><span class="ajuda">{{ n.criado_em|data }}</span></div>
-{% else %}<div class="vazio">Nenhuma notificação por enquanto.</div>{% endfor %}
-{% endblock %}
