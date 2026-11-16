@@ -1,0 +1,19 @@
+bemvindo:
+  code: BEMVINDO10
+  description: 10% na primeira compra
+  percentage: 10
+  valid_until: <%= 1.year.from_now.to_date %>
+  usage_limit: 500
+
+expirado:
+  code: VERAO2025
+  description: Promoção encerrada
+  percentage: 20
+  valid_until: 2025-03-20
+
+esgotado:
+  code: ULTIMO
+  percentage: 15
+  valid_until: <%= 1.year.from_now.to_date %>
+  usage_limit: 1
+  uses_count: 1

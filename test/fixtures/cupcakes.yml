@@ -1,0 +1,47 @@
+red_velvet:
+  category: classicos
+  name: Red Velvet
+  description: Massa aveludada vermelha com cobertura de cream cheese.
+  ingredients: Farinha de trigo, cacau, buttermilk, cream cheese
+  price: 11.50
+  stock: 20
+  min_stock: 5
+  calories: 330
+  fat_grams: 15.0
+  sugar_grams: 30.0
+  allergens: Glúten, Lactose, Ovo
+  color: "#b91c1c"
+
+morango:
+  category: frutas
+  name: Morango com Chantilly
+  description: Massa leve com morangos frescos e chantilly.
+  price: 10.50
+  stock: 18
+  allergens: Glúten, Lactose, Ovo
+  color: "#f472b6"
+
+caramelo:
+  category: classicos
+  name: Caramelo Salgado
+  description: Recheio de caramelo com flor de sal.
+  price: 11.90
+  stock: 4
+  color: "#d97706"
+
+esgotado:
+  category: classicos
+  name: Baunilha Esgotada
+  description: Sem estoque.
+  price: 8.90
+  stock: 0
+  color: "#fde68a"
+
+fora_do_cardapio:
+  category: frutas
+  name: Limão Antigo
+  description: Saiu do cardápio.
+  price: 9.90
+  stock: 10
+  active: false
+  color: "#fef08a"
