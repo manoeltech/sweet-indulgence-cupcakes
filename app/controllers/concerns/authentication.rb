@@ -63,6 +63,9 @@ module Authentication
   end
 
   def home_path_for(user)
-    user.admin? ? admin_root_path : root_path
+    if user.admin? then admin_root_path
+    elsif user.courier? then courier_root_path
+    else root_path
+    end
   end
 end
