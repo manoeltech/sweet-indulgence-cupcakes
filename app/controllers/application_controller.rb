@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   include Authentication
+  include CurrentCart
 
   add_flash_types :success, :error, :warning
 
