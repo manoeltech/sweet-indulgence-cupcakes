@@ -119,3 +119,5 @@ footer{border-top:1px solid var(--linha);color:var(--suave);font-size:.82rem;pad
 .linha-item{flex-wrap:wrap}
 .linha-item .valor{min-width:84px;text-align:right}
 @media (max-width:520px){.linha-item .nome{flex:1 1 calc(100% - 90px)}.linha-item .valor{min-width:0;margin-left:auto}}
+/* .admin-nav é declarada depois de .so-desktop e venceria a regra do celular. */
+@media (max-width:720px){.admin-nav.so-desktop{display:none}}
