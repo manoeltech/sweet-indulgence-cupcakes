@@ -1,6 +1,6 @@
 <article class="produto" data-teste="produto">
   <%= link_to cupcake_path(cupcake), class: "foto" do %>
-    <%= image_tag cupcake_image_path(cupcake, format: :svg), alt: cupcake.name, width: 200, height: 200, loading: "lazy" %>
+    <%= cupcake_image_tag(cupcake, alt: cupcake.name, width: 200, height: 200, loading: "lazy") %>
   <% end %>
   <%= render "cupcakes/card_actions_top", cupcake: cupcake %>
   <div class="info">

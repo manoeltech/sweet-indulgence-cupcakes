@@ -5,7 +5,7 @@
   <tr><th></th><th>Cupcake</th><th>Preço</th><th>Estoque</th><th>Ações</th></tr>
   <% @cupcakes.each do |cupcake| %>
     <tr style="<%= "opacity:.55" unless cupcake.active? %>" data-teste="produto-<%= cupcake.id %>">
-      <td><%= image_tag cupcake_image_path(cupcake, format: :svg), alt: "", width: 48, height: 48, style: "border-radius:8px" %></td>
+      <td><%= cupcake_image_tag(cupcake, alt: "", width: 48, height: 48, style: "border-radius:8px") %></td>
       <td><b><%= cupcake.name %></b><br><span class="ajuda"><%= cupcake.category.name %><%= " · fora do cardápio" unless cupcake.active? %></span></td>
       <td><%= brl cupcake.price %></td>
       <td>

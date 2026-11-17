@@ -9,6 +9,12 @@ module ApplicationHelper
     FLASH_CLASSES.fetch(type.to_s, "msg-aviso")
   end
 
+  # Foto real do sabor; cupcake sem foto (ex.: cadastrado pelo administrador) usa a ilustração na cor da cobertura.
+  def cupcake_image_tag(cupcake, **options)
+    source = Rails.application.assets.load_path.find(cupcake.photo_asset) ? cupcake.photo_asset : cupcake_image_path(cupcake, format: :svg)
+    image_tag source, **options
+  end
+
   # Link da barra inferior (celular), marcado como ativo na seção atual.
   def tab_link(icon, label, path, active: current_page?(path))
     link_to path, class: ("ativo" if active) do
