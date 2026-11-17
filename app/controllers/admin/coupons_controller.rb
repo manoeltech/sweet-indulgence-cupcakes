@@ -11,7 +11,6 @@ class Admin::CouponsController < Admin::BaseController
       redirect_to admin_coupons_path, success: "Cupom #{@coupon.code} criado."
     else
       @coupons = Coupon.order(valid_until: :desc)
-      flash.now[:error] = @coupon.errors.map(&:message).uniq.to_sentence
       render :index, status: :unprocessable_entity
     end
   end

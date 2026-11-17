@@ -21,6 +21,6 @@ class CouponTest < ActiveSupport::TestCase
     coupon = Coupon.new(code: "DEMAIS", percentage: 95, valid_until: Date.tomorrow)
 
     assert_not coupon.valid?
-    assert_includes coupon.errors[:percentage], "O desconto precisa ser de 1 a 90%."
+    assert_includes coupon.errors[:percentage], "O desconto precisa ser um número inteiro de 1 a 90%."
   end
 end

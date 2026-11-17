@@ -15,6 +15,7 @@ class Courier::DeliveriesTest < ActionDispatch::IntegrationTest
     assert_select "a.card", /##{@order.code}.*Cliente Teste/m
 
     get courier_delivery_path(@order)
+    assert_select "[data-teste=endereco-entrega]", /Entrega no endereço.*Rua A, 10/m
     assert_select "a[href^=?]", "https://www.google.com/maps/search/?api=1&query=Rua%20A", text: "🗺️ Abrir no GPS"
   end
 
