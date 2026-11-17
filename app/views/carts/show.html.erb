@@ -23,10 +23,10 @@
     <aside class="card">
       <label for="code" style="margin-top:0">Cupom de desconto</label>
       <% if cart.coupon %>
-        <p class="inline"><span class="status entregue"><%= cart.coupon.code %> (−<%= cart.coupon.percentage %>%)</span>
+        <p class="inline"><span class="status ok"><%= cart.coupon.code %> (−<%= cart.coupon.percentage %>%)</span>
           <%= button_to "Remover", cart_coupon_path, method: :delete, class: "btn sec pequeno" %></p>
       <% else %>
-        <%= form_with url: cart_coupon_path, class: "inline", style: "width:100%" do |f| %>
+        <%= form_with url: cart_coupon_path, class: "inline", html: { style: "width:100%" } do |f| %>
           <%= f.text_field :code, id: "code", placeholder: "Ex.: BEMVINDO10", style: "flex:1;width:100%" %>
           <%= f.button "Aplicar", class: "btn pequeno" %>
         <% end %>

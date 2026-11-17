@@ -5,7 +5,7 @@ class Orders::PixPaymentsController < ApplicationController
   def create
     order = current_user.orders.find_by!(code: params[:order_id])
     order.confirm_pix!
-    redirect_to order_confirmation_path(order), success: "Pagamento PIX confirmado!"
+    redirect_to order_path(order), success: "Pagamento PIX confirmado!"
   rescue BusinessRuleError => error
     redirect_to order_confirmation_path(order), error: error.message
   end

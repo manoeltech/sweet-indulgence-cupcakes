@@ -20,6 +20,12 @@ class AuthenticationTest < ActionDispatch::IntegrationTest
     assert_select ".msg-erro", /Informe seu nome.*Já existe uma conta com este e-mail/
   end
 
+  test "formulário de login mantém a largura máxima (estilo dentro de html:)" do
+    get new_session_path
+
+    assert_select "form.card[style*='max-width:420px']"
+  end
+
   test "login com senha errada" do
     post session_path, params: { email: "cliente@teste.com", password: "errada" }
 

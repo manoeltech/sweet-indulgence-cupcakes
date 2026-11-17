@@ -44,3 +44,12 @@ document.addEventListener("DOMContentLoaded", () => {
   form.addEventListener("change", update);
   update();
 });
+
+// Remoção com confirmação digitada (CU02 passo 5): o nome digitado vai para o campo "confirmation".
+document.addEventListener("submit", (event) => {
+  const message = event.target.dataset.promptConfirmation;
+  if (!message) return;
+  const typed = window.prompt(message);
+  if (typed === null) { event.preventDefault(); return; }
+  event.target.elements["confirmation"].value = typed;
+});

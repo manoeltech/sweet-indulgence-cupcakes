@@ -1,5 +1,5 @@
 <% if cupcake.stock.positive? %>
-  <%= form_with url: cart_items_path, class: "inline", style: "margin:8px 0 6px" do |f| %>
+  <%= form_with url: cart_items_path, class: "inline", html: { style: "margin:8px 0 6px" } do |f| %>
     <%= hidden_field_tag :cupcake_id, cupcake.id %>
     <%= f.label :quantity, "Qtd.", for: "qtd", style: "margin:0" %>
     <%= f.number_field :quantity, id: "qtd", value: 1, min: 1, max: cupcake.stock, style: "width:80px" %>
