@@ -1,5 +1,5 @@
 <% content_for :title, "Entrar" %>
-<%= form_with url: session_path(return_to: params[:return_to]), class: "card", style: "max-width:420px;margin:0 auto" do |f| %>
+<%= form_with url: session_path(return_to: params[:return_to]), class: "card", html: { style: "max-width:420px;margin:0 auto" } do |f| %>
   <h1>Entrar</h1>
   <%= f.label :email, "E-mail" %>
   <%= f.email_field :email, value: params[:email], required: true, autocomplete: "email" %>

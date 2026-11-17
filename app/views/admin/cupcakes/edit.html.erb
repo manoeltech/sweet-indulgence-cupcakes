@@ -1,0 +1,4 @@
+<% content_for :title, "Editar #{@cupcake.name_was}" %>
+<%= render "admin/nav" %>
+<h1>Editar <%= @cupcake.name_was %></h1>
+<%= render "form", cupcake: @cupcake %>

@@ -1,2 +1,5 @@
 <%= tab_link "📋", "Pedidos", admin_root_path %>
+<%= tab_link "🧁", "Produtos", admin_cupcakes_path, active: controller_path.start_with?("admin/cupcakes") %>
+<%= tab_link "🏷️", "Cupons", admin_coupons_path %>
+<%= tab_link "📊", "Relatórios", admin_report_path %>
 <%= tab_link "👤", "Perfil", profile_path %>

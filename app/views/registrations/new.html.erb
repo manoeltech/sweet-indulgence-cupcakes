@@ -1,5 +1,5 @@
 <% content_for :title, "Criar conta" %>
-<%= form_with model: @user, url: registration_path(return_to: params[:return_to]), class: "card", style: "max-width:460px;margin:0 auto" do |f| %>
+<%= form_with model: @user, url: registration_path(return_to: params[:return_to]), class: "card", html: { style: "max-width:460px;margin:0 auto" } do |f| %>
   <h1>Criar conta</h1>
   <%= f.label :name, "Nome" %>
   <%= f.text_field :name, required: true, autocomplete: "name" %>
