@@ -1,11 +1,19 @@
 <% content_for :title, "Entregas" %>
 <h1>Minhas entregas</h1>
 <% @orders.each do |order| %>
-  <%= link_to courier_delivery_path(order), class: "card", style: "display:block;text-decoration:none;color:inherit;margin-bottom:10px" do %>
-    <b>#<%= order.code %></b> · <%= order.customer.name %><br>📍 <%= order.delivery_address %><br>
-    <span class="status <%= order.status %>"><%= order.status_label %></span>
+  <% if order.out_for_delivery? %>
+    <%= link_to courier_delivery_path(order), class: "card", style: "display:block;text-decoration:none;color:inherit;margin-bottom:10px" do %>
+      <b>#<%= order.code %></b> · <%= order.customer.name %><br>📍 <%= order.delivery_address %><br>
+      <span class="status <%= order.status %>"><%= order.status_label %></span>
+    <% end %>
+  <% else %>
+    <div class="card" style="margin-bottom:10px;opacity:.75" data-teste="aguardando-sair">
+      <b>#<%= order.code %></b> · <%= order.customer.name %><br>📍 <%= order.delivery_address %><br>
+      <span class="status <%= order.status %>"><%= order.status_label %></span>
+      <p class="ajuda" style="margin:6px 0 0">Ainda na loja. Abre para entregar quando a loja marcar "Saiu para entrega".</p>
+    </div>
   <% end %>
 <% end %>
 <% if @orders.empty? %>
-  <div class="vazio">Nenhuma entrega em andamento. Os pedidos aparecem aqui quando a loja os envia para você.</div>
+  <div class="vazio">Nenhuma entrega em andamento. Os pedidos aparecem aqui quando a loja os atribui a você.</div>
 <% end %>

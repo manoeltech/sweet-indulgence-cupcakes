@@ -14,7 +14,7 @@ Os testes foram escritos junto com cada tarefa, na mesma branch, e cada Pull Req
 
 Como rodar: `bin/rails test` (testes), `bin/rubocop` (estilo) e `bin/brakeman` (segurança).
 
-**Resultado atual: 100 testes, 401 verificações, 0 falhas** ([saída completa](evidencias/minitest-execucao-final.txt)). RuboCop e Brakeman sem apontamentos ([saída](evidencias/qualidade-rubocop-brakeman.txt)).
+**Resultado atual: 101 testes, 408 verificações, 0 falhas** ([saída completa](evidencias/minitest-execucao-final.txt)). RuboCop e Brakeman sem apontamentos ([saída](evidencias/qualidade-rubocop-brakeman.txt)).
 
 ## 2. Laudo de qualidade
 
@@ -31,6 +31,7 @@ Defeitos encontrados durante a verificação da versão Rails, com causa, corre�
 | R7 | Teste manual no navegador (tela de cupons e pedidos) | "Entregue" aparecia rosa em vez de verde e "Cancelado"/"Aguardando pagamento" sem a cor de alerta | O CSS veio da versão Flask com os status em português (`.status.entregue`); no Rails os status são `delivered`, `canceled` e `awaiting_payment` | Classes do CSS renomeadas; classe `.ok` para o cupom aplicado | print [`17`](evidencias/telas/17-entregador-entregue.png) e [`18`](evidencias/telas/18-avaliacao-enviada.png) | `feature/admin-cupons-e-relatorios` |
 | R8 | Teste manual no navegador (relatório no celular) | Relatório com 597 px numa tela de 390 px; login, cadastro e formulários do admin sem a largura máxima planejada | O `form_with` do Rails ignora a opção `style:` (precisa ir dentro de `html: {}`), em 10 formulários | Estilos movidos para `html: { style: }`; teste de regressão no login | largura 597 → 390 px; teste `formulário de login mantém a largura máxima`; print [`22`](evidencias/telas/22-admin-relatorio.png) | `feature/admin-cupons-e-relatorios` |
 | R9 | Análise de segurança (Brakeman) | Aviso "HTTP verb confusion": requisição HEAD é roteada como GET, mas `request.get?` é falso | A correção do R2 usava só `request.get?` | Considera GET e HEAD | [`qualidade-rubocop-brakeman.txt`](evidencias/qualidade-rubocop-brakeman.txt) (antes e depois) | `docs/documentacao-rails` |
+| R10 | Teste manual no site publicado (Render), como entregador | O entregador recebia a notificação "Você recebeu o pedido para entregar", mas "Minhas entregas" aparecia vazia | A lista só mostrava pedidos que já tinham saído para entrega; a notificação chega antes, quando o admin atribui o entregador | A lista mostra também os pedidos atribuídos ainda na loja, como "Em preparação", sem abrir para entregar; só os que saíram abrem; teste novo | teste `pedido atribuído e ainda em preparação aparece na lista, mas só abre depois de sair` | `feature/entregador-ve-pedidos-em-preparacao` |
 
 Observação de ambiente (não é defeito do sistema): o navegador de testes do servidor Linux não tinha fonte de emoji, e os ícones apareciam como quadrados. Celulares, Windows e macOS têm a fonte; para os prints foi usada a fonte livre Noto Color Emoji. As datas nos campos de data aparecem no formato do idioma do navegador.
 

@@ -32,7 +32,7 @@ Revisão (kaizen) da documentação feita no PIT I para a loja **Sweet Indulgenc
 | Estoque | Baixa ao registrar o pedido e devolução ao cancelar | Evita vender o mesmo cupcake duas vezes enquanto o PIX não é pago. |
 
 ### Fora do escopo desta entrega
-Chat em tempo real entre entregador e cliente (US18 CA#2 — substituído por WhatsApp), assinatura do cliente na entrega (US17 CA#2, opcional), exportação do relatório em PDF (o CSV está implementado), upload de fotos (os produtos usam ilustrações vetoriais geradas pelo sistema).
+Chat em tempo real entre entregador e cliente (US18 CA#2 — substituído por WhatsApp), assinatura do cliente na entrega (US17 CA#2, opcional), exportação do relatório em PDF (o CSV está implementado), upload de fotos pelo administrador (os 10 sabores usam fotos reais do Wikimedia Commons, com [créditos](../creditos-das-fotos.md); cupcake novo usa uma ilustração gerada pelo sistema).
 
 ## 2. Modelagem UML revisada
 

@@ -4,7 +4,7 @@ class Courier::BaseController < ApplicationController
 
   private
 
-  # US16 RN#1: o entregador só vê os pedidos dele que já saíram para entrega.
+  # US16 RN#1: o entregador só abre, contata e conclui os pedidos dele que já saíram para entrega.
   def my_deliveries
     current_user.deliveries.out_for_delivery
   end
