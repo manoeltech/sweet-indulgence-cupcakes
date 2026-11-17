@@ -1,0 +1,17 @@
+<% content_for :title, "Pedido ##{@order.code}" %>
+<p><%= link_to "← Minhas entregas", courier_deliveries_path %></p>
+<h1>Pedido #<%= @order.code %></h1>
+<div class="card">
+  <p><b><%= @order.customer.name %></b><br>📍 <%= @order.delivery_address %><br>📞 <%= @order.customer.phone.presence || "sem telefone" %></p>
+  <p><% @order.items.each do |item| %><%= item.quantity %>× <%= item.cupcake.name %><br><% end %></p>
+  <p class="ajuda">Pagamento: <%= @order.payment_label %> (já pago no app)</p>
+  <p style="display:flex;gap:8px;flex-wrap:wrap">
+    <%= link_to "🗺️ Abrir no GPS", @map_url, class: "btn sec", target: "_blank", rel: "noopener" %>
+    <%= button_to "📞 Ligar", courier_delivery_contact_path(@order), params: { channel: "call" }, class: "btn sec", form: { style: "display:inline" } %>
+    <%= button_to "💬 WhatsApp", courier_delivery_contact_path(@order), params: { channel: "whatsapp" }, class: "btn sec", form: { style: "display:inline" } %>
+  </p>
+</div>
+<%= form_with url: courier_delivery_completion_path(@order), class: "card", html: { style: "margin-top:14px" } do |f| %>
+  <label class="inline" style="font-weight:600"><%= f.check_box :confirmed, { style: "width:auto" }, "1", nil %> O cliente recebeu e conferiu o pedido</label>
+  <%= f.button "✅ Marcar como entregue", class: "btn bloco", style: "margin-top:12px" %>
+<% end %>

@@ -1,1 +1,1 @@
-<%= link_to "Ver detalhes", cupcake_path(cupcake), class: "btn pequeno bloco" %>
+<%= button_to "Adicionar ao carrinho", cart_items_path, params: { cupcake_id: cupcake.id }, class: "btn pequeno bloco" %>

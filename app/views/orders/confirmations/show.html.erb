@@ -1,0 +1,24 @@
+<% content_for :title, "Pedido ##{@order.code}" %>
+<div class="card" style="max-width:620px;margin:0 auto;text-align:center">
+  <% if @order.awaiting_payment? %>
+    <p style="font-size:2.5rem;margin:0">⚡</p>
+    <h1>Pedido #<%= @order.code %> aguardando o PIX</h1>
+    <p>Copie o código abaixo e pague no app do seu banco. Total: <b><%= brl @order.total %></b></p>
+    <p class="pix" id="pix"><%= @order.pix_code %></p>
+    <button class="btn sec" type="button" data-copy="#pix">Copiar código</button>
+    <%= button_to "Já paguei (simular confirmação do banco)", order_pix_payment_path(@order), class: "btn", form: { style: "margin-top:12px" } %>
+    <p class="ajuda">Demonstração: em produção, a confirmação chega automaticamente do gateway.</p>
+  <% else %>
+    <p style="font-size:2.5rem;margin:0">🎉</p>
+    <h1>Pedido #<%= @order.code %> confirmado!</h1>
+    <p>Pagamento aprovado<%= " no cartão final #{@order.card_last4}" if @order.card_last4 %>. Total: <b><%= brl @order.total %></b></p>
+    <p>
+      <% if @order.delivery? %>Previsão de entrega: cerca de <%= @order.delivery_zone.eta_minutes %> minutos.
+      <% else %>Pronto para retirada em cerca de <%= Order::PICKUP_MINUTES %> minutos.<% end %>
+    </p>
+  <% end %>
+  <p style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px">
+    <%= render "orders/confirmations/next_steps", order: @order %>
+    <%= link_to "Voltar à vitrine", root_path, class: "btn sec" %>
+  </p>
+</div>

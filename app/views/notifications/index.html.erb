@@ -1,0 +1,6 @@
+<% content_for :title, "Notificações" %>
+<h1>Notificações</h1>
+<% @notifications.each do |notification| %>
+  <div class="card" style="margin-bottom:8px"><%= notification.message %><br><span class="ajuda"><%= l notification.created_at %></span></div>
+<% end %>
+<% if @notifications.empty? %><div class="vazio">Nenhuma notificação por enquanto.</div><% end %>

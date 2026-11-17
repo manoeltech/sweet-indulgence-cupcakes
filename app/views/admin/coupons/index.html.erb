@@ -1,0 +1,25 @@
+<% content_for :title, "Cupons" %>
+<%= render "admin/nav" %>
+<h1>Cupons de desconto</h1>
+<div class="duas">
+  <div class="tabela"><table>
+    <tr><th>Código</th><th>Desconto</th><th>Validade</th><th>Usos</th></tr>
+    <% @coupons.each do |coupon| %>
+      <tr>
+        <td><b><%= coupon.code %></b><br><span class="ajuda"><%= coupon.description %></span></td>
+        <td><%= coupon.percentage %>%</td>
+        <td><%= l coupon.valid_until %> <% if coupon.expired? %><span class="status canceled">expirado</span><% end %></td>
+        <td><%= coupon.uses_count %><%= " / #{coupon.usage_limit}" if coupon.usage_limit %></td>
+      </tr>
+    <% end %>
+  </table></div>
+  <%= form_with model: [ :admin, @coupon ], class: "card", html: { style: "align-self:start" } do |f| %>
+    <h2 style="margin-top:0">Novo cupom</h2>
+    <%= f.label :code, "Código" %><%= f.text_field :code, style: "text-transform:uppercase" %>
+    <%= f.label :description, "Descrição" %><%= f.text_field :description %>
+    <%= f.label :percentage, "Desconto (%)" %><%= f.number_field :percentage, min: 1, max: 90 %>
+    <%= f.label :valid_until, "Válido até" %><%= f.date_field :valid_until %>
+    <%= f.label :usage_limit, "Limite de usos (opcional)" %><%= f.number_field :usage_limit, min: 1 %>
+    <%= f.button "Criar cupom", class: "btn bloco", style: "margin-top:14px" %>
+  <% end %>
+</div>

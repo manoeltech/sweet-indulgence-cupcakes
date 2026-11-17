@@ -1,0 +1,29 @@
+# Antes da correção R9
+$ bin/rubocop
+
+99 files inspected, no offenses detected
+
+$ bin/brakeman -q --no-pager
+Message: Potential HTTP verb confusion. `HEAD` is routed like `GET` but `request.get?` will return `false`
+Code: request.get? ? (request.fullpath) : (nil)
+File: app/controllers/concerns/authentication.rb
+Line: 36
+
+# Depois da correção R9
+$ bin/rubocop
+99 files inspected, no offenses detected
+
+$ bin/brakeman -q --no-pager
+== Brakeman Report ==
+Application Path: (raiz do projeto)
+Rails Version: 8.1.4.1
+Brakeman Version: 8.1.0
+Checks Run: BasicAuth, BasicAuthTimingAttack, CSRFTokenForgeryCVE, ContentTag, CookieSerialization, CreateWith, CrossSiteScripting, DefaultRoutes, Deserialize, DetailedExceptions, DigestDoS, DynamicFinders, EOLRails, EOLRuby, EscapeFunction, Evaluation, Execute, FileAccess, FileDisclosure, FilterSkipping, ForgerySetting, HeaderDoS, I18nXSS, JRubyXML, JSONEncoding, JSONEntityEscape, JSONParsing, LinkTo, LinkToHref, MailTo, MassAssignment, MimeTypeDoS, ModelAttrAccessible, ModelAttributes, ModelSerialize, NestedAttributes, NestedAttributesBypass, NumberToCurrency, PageCachingCVE, Pathname, PermitAttributes, QuoteTableName, Ransack, Redirect, RegexDoS, Render, RenderDoS, RenderInline, RenderRCE, ResponseSplitting, RouteDoS, SQL, SQLCVEs, SSLVerify, SafeBufferManipulation, SanitizeConfigCve, SanitizeMethods, SelectTag, SelectVulnerability, Send, SendFile, SessionManipulation, SessionSettings, SimpleFormat, SingleQuotes, SkipBeforeFilter, SprocketsPathTraversal, StripTags, SymbolDoSCVE, TemplateInjection, TranslateBug, UnsafeReflection, UnsafeReflectionMethods, ValidationRegex, VerbConfusion, WeakRSAKey, WithoutProtection, XMLDoS, YAMLParsing
+== Overview ==
+Controllers: 31
+Models: 16
+Templates: 35
+Errors: 0
+Security Warnings: 0
+== Warning Types ==
+No warnings found

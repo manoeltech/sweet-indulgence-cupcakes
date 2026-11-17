@@ -52,8 +52,10 @@ class Order < ApplicationRecord
     PAYMENT_LABELS.fetch(payment_method)
   end
 
+  # Só os próximos passos que fazem sentido: pedido de retirada não "sai para entrega" e vice-versa.
   def next_statuses
-    TRANSITIONS.fetch(status, [])
+    skipped = delivery? ? "ready_for_pickup" : "out_for_delivery"
+    TRANSITIONS.fetch(status, []) - [ skipped ]
   end
 
   def active?
@@ -190,10 +192,7 @@ class Order < ApplicationRecord
   def check_transition_rules(new_status, by)
     case new_status
     when "out_for_delivery"
-      raise BusinessRuleError, "Pedido de retirada não sai para entrega." unless delivery?
       raise BusinessRuleError, "Atribua um entregador antes de enviar o pedido." if courier.nil?
-    when "ready_for_pickup"
-      raise BusinessRuleError, "Este pedido é de entrega, não de retirada." unless pickup?
     when "delivered"
       raise BusinessRuleError, "Este pedido não está atribuído a você." if by&.courier? && courier_id != by.id
     end

@@ -1,0 +1,13 @@
+<% content_for :title, "Entrar" %>
+<%= form_with url: session_path(return_to: params[:return_to]), class: "card", html: { style: "max-width:420px;margin:0 auto" } do |f| %>
+  <h1>Entrar</h1>
+  <%= f.label :email, "E-mail" %>
+  <%= f.email_field :email, value: params[:email], required: true, autocomplete: "email" %>
+  <%= f.label :password, "Senha" %>
+  <%= f.password_field :password, required: true, autocomplete: "current-password" %>
+  <%= f.button "Entrar", class: "btn bloco", style: "margin-top:16px" %>
+  <p style="text-align:center">Ainda não tem conta? <%= link_to "Cadastre-se", new_registration_path(return_to: params[:return_to]) %></p>
+  <details class="ajuda"><summary>Contas de demonstração</summary>
+    <p>cliente@sweetindulgence.com · admin@sweetindulgence.com · entregador@sweetindulgence.com — senha <code>cupcake123</code></p>
+  </details>
+<% end %>

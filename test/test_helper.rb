@@ -17,3 +17,11 @@ module ActiveSupport
     end
   end
 end
+
+module SignInHelper
+  def sign_in_as(user)
+    post session_path, params: { email: user.email, password: "cupcake123" }
+  end
+end
+
+ActionDispatch::IntegrationTest.include SignInHelper
