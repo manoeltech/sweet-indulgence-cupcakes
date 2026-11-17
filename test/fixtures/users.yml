@@ -1,0 +1,31 @@
+<% password_digest = BCrypt::Password.create("cupcake123", cost: BCrypt::Engine::MIN_COST) %>
+cliente:
+  name: Cliente Teste
+  email: cliente@teste.com
+  phone: "83999992222"
+  password_digest: <%= password_digest %>
+  role: customer
+
+outro_cliente:
+  name: Outra Cliente
+  email: outra@teste.com
+  password_digest: <%= password_digest %>
+  role: customer
+
+admin:
+  name: Administrador da Loja
+  email: admin@teste.com
+  password_digest: <%= password_digest %>
+  role: admin
+
+entregador:
+  name: Carlos Entregador
+  email: entregador@teste.com
+  password_digest: <%= password_digest %>
+  role: courier
+
+outro_entregador:
+  name: Paula Entregadora
+  email: paula@teste.com
+  password_digest: <%= password_digest %>
+  role: courier

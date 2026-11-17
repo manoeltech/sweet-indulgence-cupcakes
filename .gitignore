@@ -1,7 +1,14 @@
-__pycache__/
-*.pyc
-.venv/
-.deps/
-instance/
-*.db
-.pytest_cache/
+# Ruby / Rails
+/.bundle
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+/tmp/pids/*
+!/tmp/pids/.keep
+/storage/*
+/public/assets
+/config/master.key
+/config/credentials.yml.enc
+/.env*
+/coverage

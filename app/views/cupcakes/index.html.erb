@@ -1,0 +1,23 @@
+<%= form_with url: root_path, method: :get, class: "busca", role: "search" do |f| %>
+  <% if @category_slug %><%= hidden_field_tag :categoria, @category_slug %><% end %>
+  <%= f.search_field :q, value: @query, placeholder: "🔍 Buscar cupcakes...", "aria-label": "Buscar cupcakes" %>
+  <%= f.button "Buscar", class: "btn", name: nil %>
+<% end %>
+
+<nav class="categorias" aria-label="Categorias">
+  <%= link_to root_path(q: @query.presence), class: ("ativo" unless @category_slug) do %><i>▦</i>Todos<% end %>
+  <% @categories.each do |category| %>
+    <%= link_to root_path(categoria: category.slug, q: @query.presence), class: ("ativo" if @category_slug == category.slug) do %>
+      <i><%= category.icon %></i><%= category.name %>
+    <% end %>
+  <% end %>
+</nav>
+
+<% if @cupcakes.any? %>
+  <div class="grade"><%= render @cupcakes %></div>
+<% else %>
+  <div class="vazio">
+    <p>Nenhum cupcake encontrado<%= " para “#{@query}”" if @query.present? %>.</p>
+    <%= link_to "Ver todos", root_path, class: "btn sec" %>
+  </div>
+<% end %>

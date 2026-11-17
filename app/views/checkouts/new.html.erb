@@ -1,0 +1,67 @@
+<% content_for :title, "Finalizar pedido" %>
+<h1>Finalizar pedido</h1>
+<%= form_with scope: :checkout, url: checkout_path, class: "duas", id: "checkout", data: { checkout: true }, html: { novalidate: true } do |f| %>
+  <div>
+    <section class="card">
+      <h2 style="margin-top:0">1. Como quer receber?</h2>
+      <div class="opcoes">
+        <label><%= f.radio_button :fulfillment, "delivery", checked: @form.fetch(:fulfillment, "delivery") == "delivery" %>🛵 Entrega em casa</label>
+        <label><%= f.radio_button :fulfillment, "pickup", checked: @form[:fulfillment] == "pickup" %>🏪 Retirar na loja</label>
+      </div>
+      <div id="bloco-entrega">
+        <%= f.label :delivery_zone_id, "Bairro / zona de entrega" %>
+        <%= f.select :delivery_zone_id,
+              DeliveryZone.order(:fee).map { |zone| [ "#{zone.name} — #{brl zone.fee} (~#{zone.eta_minutes} min)", zone.id, { data: { fee: zone.fee } } ] },
+              { include_blank: "Selecione…", selected: @form[:delivery_zone_id] } %>
+        <% if current_user.addresses.any? %>
+          <%= f.label :saved_address_id, "Endereço salvo" %>
+          <%= f.select :saved_address_id, current_user.addresses.map { |a| [ a.to_s, a.id ] }, { include_blank: "Digitar outro endereço", selected: @form[:saved_address_id] } %>
+        <% end %>
+        <%= f.label :address, "Endereço completo" %>
+        <%= f.text_field :address, value: @form[:address], placeholder: "Rua, número, bairro, CEP", autocomplete: "street-address" %>
+      </div>
+      <div id="bloco-retirada" class="oculto">
+        <p><b>Sweet Indulgence Cupcakes</b><br><%= Order::STORE_ADDRESS %></p>
+        <p class="ajuda">Seu pedido fica pronto em cerca de <%= Order::PICKUP_MINUTES %> minutos após a confirmação do pagamento.</p>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:16px">
+      <h2 style="margin-top:0">2. Pagamento</h2>
+      <div class="opcoes">
+        <% Order::PAYMENT_LABELS.each do |value, label| %>
+          <label><%= f.radio_button :payment_method, value, checked: @form.fetch(:payment_method, "credit") == value %><%= value == "pix" ? "⚡" : "💳" %> <%= label %></label>
+        <% end %>
+      </div>
+      <div id="bloco-cartao">
+        <%= f.fields_for :card do |card| %>
+          <%= card.label :number, "Número do cartão" %>
+          <%= card.text_field :number, inputmode: "numeric", autocomplete: "cc-number", placeholder: "0000 0000 0000 0000" %>
+          <%= card.label :name, "Nome impresso" %>
+          <%= card.text_field :name, autocomplete: "cc-name", value: @form.dig(:card, :name) %>
+          <div class="duas" style="grid-template-columns:1fr 1fr;gap:10px">
+            <div><%= card.label :expiry, "Validade" %><%= card.text_field :expiry, placeholder: "MM/AA", autocomplete: "cc-exp", value: @form.dig(:card, :expiry) %></div>
+            <div><%= card.label :cvv, "CVV" %><%= card.text_field :cvv, inputmode: "numeric", autocomplete: "cc-csc", maxlength: 4 %></div>
+          </div>
+        <% end %>
+        <p class="ajuda">Ambiente de demonstração: use o cartão 4111 1111 1111 1111 (aprovado) ou 4000 0000 0000 0002 (recusado). Não digite um cartão real.</p>
+      </div>
+      <div id="bloco-pix" class="oculto"><p class="ajuda">O código PIX “copia e cola” aparece na próxima tela.</p></div>
+    </section>
+  </div>
+
+  <aside class="card" style="align-self:start">
+    <h2 style="margin-top:0">Resumo</h2>
+    <% cart.lines.each do |line| %>
+      <p style="margin:4px 0"><%= line.quantity %>× <%= line.cupcake.name %> <span style="float:right"><%= brl line.subtotal %></span></p>
+    <% end %>
+    <table class="resumo" style="margin-top:10px;background:none">
+      <tr><td>Subtotal</td><td style="text-align:right"><%= brl cart.subtotal %></td></tr>
+      <% if cart.coupon %><tr><td>Cupom <%= cart.coupon.code %></td><td style="text-align:right">− <%= brl cart.discount %></td></tr><% end %>
+      <% if cart.coupon_error %><tr><td colspan="2" class="msg-erro"><%= cart.coupon_error %></td></tr><% end %>
+      <tr><td>Frete</td><td style="text-align:right" id="frete">—</td></tr>
+      <tr class="total"><td>Total</td><td style="text-align:right" id="total" data-base="<%= cart.total %>"><%= brl cart.total %></td></tr>
+    </table>
+    <%= f.button "Finalizar pedido", class: "btn bloco", style: "margin-top:14px" %>
+  </aside>
+<% end %>

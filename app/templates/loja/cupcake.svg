@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Ilustração do cupcake">
-  <rect width="200" height="200" fill="#fdf2f8"/>
-  <path d="M55 105 L145 105 L132 172 Q100 180 68 172 Z" fill="#f5d0a9" stroke="#c2410c" stroke-width="2"/>
-  <path d="M70 108 L76 170 M90 108 L92 174 M110 108 L108 174 M130 108 L124 170" stroke="#e8a974" stroke-width="3"/>
-  <path d="M48 108 Q40 84 64 78 Q62 54 90 56 Q100 34 116 52 Q142 48 138 74 Q162 80 152 108 Z" fill="{{ cor }}" stroke="rgba(0,0,0,.18)" stroke-width="2"/>
-  <path d="M70 80 Q90 70 108 76" stroke="rgba(255,255,255,.55)" stroke-width="6" fill="none" stroke-linecap="round"/>
-  <circle cx="100" cy="42" r="10" fill="#dc2626"/><path d="M100 32 Q104 22 112 20" stroke="#15803d" stroke-width="3" fill="none"/>
-  <g fill="#fff" opacity=".9"><rect x="66" y="90" width="8" height="3" rx="1.5" transform="rotate(30 70 91)"/><rect x="124" y="86" width="8" height="3" rx="1.5" transform="rotate(-25 128 87)"/><rect x="98" y="94" width="8" height="3" rx="1.5"/></g>
-</svg>

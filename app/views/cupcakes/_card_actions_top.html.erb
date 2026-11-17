@@ -1,0 +1,4 @@
+<% if current_user&.customer? %>
+  <%= button_to (current_user.favorited?(cupcake) ? "♥" : "♡"), cupcake_favorite_path(cupcake),
+        params: { return_to: request.fullpath }, form_class: "coracao", "aria-label": "Favoritar #{cupcake.name}" %>
+<% end %>

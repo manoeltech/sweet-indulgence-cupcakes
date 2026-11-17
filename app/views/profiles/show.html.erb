@@ -1,0 +1,29 @@
+<% content_for :title, "Perfil" %>
+<h1>Olá, <%= @user.first_name %></h1>
+<div class="duas">
+  <section class="card">
+    <h2 style="margin-top:0">Meus dados</h2>
+    <p><%= @user.name %><br><%= @user.email %><br><%= @user.phone.presence || "Sem telefone" %></p>
+    <% if @user.customer? %>
+      <h2>Endereços</h2>
+      <% @user.addresses.each do |address| %><p>📍 <%= address %></p><% end %>
+      <% if @user.addresses.empty? %><p class="ajuda">Nenhum endereço salvo.</p><% end %>
+      <%= form_with model: @address, url: profile_addresses_path do |f| %>
+        <%= f.label :street, "Rua" %><%= f.text_field :street %>
+        <div class="duas" style="grid-template-columns:1fr 2fr;gap:10px">
+          <div><%= f.label :number, "Número" %><%= f.text_field :number %></div>
+          <div><%= f.label :district, "Bairro" %><%= f.text_field :district %></div>
+        </div>
+        <%= f.label :zip_code, "CEP" %><%= f.text_field :zip_code, inputmode: "numeric", placeholder: "00000-000" %>
+        <%= f.button "Salvar endereço", class: "btn pequeno", style: "margin-top:10px" %>
+      <% end %>
+    <% end %>
+  </section>
+  <section class="card" style="align-self:start">
+    <h2 style="margin-top:0">Notificações</h2>
+    <p>Avisos sobre o andamento dos pedidos estão <b><%= @user.notifications_enabled? ? "ativados" : "desativados" %></b>.</p>
+    <%= button_to (@user.notifications_enabled? ? "Desativar" : "Ativar"), profile_notification_preference_path,
+          method: :patch, params: { enabled: @user.notifications_enabled? ? "0" : "1" }, class: "btn sec pequeno" %>
+    <%= button_to "Sair da conta", logout_path, method: :delete, class: "btn sec bloco", form: { style: "margin-top:20px" } %>
+  </section>
+</div>
