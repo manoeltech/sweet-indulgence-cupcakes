@@ -63,6 +63,8 @@ Antes do Rails, o sistema foi prototipado em Python/Flask (tag [`v1-flask`](http
 
 Cada colega recebe o link da aplicação e o [formulário de teste](formulario-teste-colegas.md) e testa como um cliente de verdade. As respostas e os prints de erro vão para a pasta `validacao-colegas/`. Cada correção sugerida entra neste laudo no mesmo formato acima, numa branch própria.
 
+Antes disso, o sistema foi percorrido por 5 agentes simulados com personas (cliente, cliente no celular, administradora e entregador). **Não são colegas reais**; os relatos e a análise de cada ponto estão em [`testes-com-personas.md`](testes-com-personas.md).
+
 ## 4. Evidências
 
 - [`evidencias/telas/`](evidencias/telas/): 24 prints do passo a passo como cliente (celular), administrador (computador) e entregador (celular), tirados da versão Rails.
