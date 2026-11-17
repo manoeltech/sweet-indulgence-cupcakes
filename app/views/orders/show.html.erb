@@ -1,0 +1,66 @@
+<% content_for :title, "Pedido ##{@order.code}" %>
+<p><%= link_to "← Meus pedidos", orders_path %></p>
+<h1>Pedido #<%= @order.code %> <span class="status <%= @order.status %>"><%= @order.status_label %></span></h1>
+<div class="duas">
+  <section class="card">
+    <% if @order.canceled? %>
+      <p>Este pedido foi cancelado.</p>
+    <% elsif @order.awaiting_payment? %>
+      <p>Aguardando o pagamento PIX. <%= link_to "Ver código PIX", order_confirmation_path(@order) %></p>
+    <% else %>
+      <% current_step = @order.timeline.index(@order.status) || 0 %>
+      <ul class="timeline">
+        <% @order.timeline.each_with_index do |step, index| %>
+          <li class="<%= "feito" if index <= current_step %>"><%= Order::STATUS_LABELS[step] %></li>
+        <% end %>
+      </ul>
+      <% if @order.out_for_delivery? && @order.courier %><p>🛵 <%= @order.courier.name %> está a caminho.</p><% end %>
+      <% if @order.pickup? && !@order.delivered? %>
+        <p class="ajuda">Retirada na loja: <%= Order::STORE_ADDRESS %> (~<%= Order::PICKUP_MINUTES %> min após a confirmação).</p>
+      <% end %>
+    <% end %>
+    <p class="ajuda">Atualizado em <%= l @order.updated_at %>. As mudanças também chegam nas suas 🔔 notificações.</p>
+  </section>
+  <aside class="card">
+    <% @order.items.each do |item| %>
+      <p style="margin:4px 0"><%= item.quantity %>× <%= item.cupcake.name %> <span style="float:right"><%= brl item.subtotal %></span></p>
+    <% end %>
+    <table class="resumo" style="margin-top:10px;background:none">
+      <tr><td>Subtotal</td><td style="text-align:right"><%= brl @order.subtotal %></td></tr>
+      <% if @order.discount.positive? %><tr><td>Desconto (<%= @order.coupon.code %>)</td><td style="text-align:right">− <%= brl @order.discount %></td></tr><% end %>
+      <tr><td>Frete</td><td style="text-align:right"><%= brl @order.shipping_fee %></td></tr>
+      <tr class="total"><td>Total</td><td style="text-align:right"><%= brl @order.total %></td></tr>
+    </table>
+    <p class="ajuda"><%= @order.delivery? ? "Entrega: #{@order.delivery_address}" : "Retirada na loja" %></p>
+  </aside>
+</div>
+
+<% if @order.delivered? %>
+  <h2>Avalie seu pedido</h2>
+  <% @order.items.each do |item| %>
+    <% if item.cupcake_id.in?(@reviewed_cupcake_ids) %>
+      <p class="card">✅ <%= item.cupcake.name %> já avaliado. Obrigado!</p>
+    <% else %>
+      <%= form_with model: Review.new, url: order_reviews_path(@order), class: "card", html: { style: "margin-bottom:10px" } do |f| %>
+        <%= f.hidden_field :cupcake_id, value: item.cupcake_id %>
+        <b><%= item.cupcake.name %></b>
+        <div class="duas" style="grid-template-columns:1fr 1fr;gap:10px">
+          <% { rating: "Cupcake", delivery_rating: "Entrega" }.each do |field, label| %>
+            <div>
+              <label><%= label %></label>
+              <div class="estrelas">
+                <% 5.downto(1) do |stars| %>
+                  <%= f.radio_button field, stars, id: "#{field}-#{item.id}-#{stars}" %>
+                  <label for="<%= "#{field}-#{item.id}-#{stars}" %>" aria-label="<%= stars %> estrela(s)">★</label>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        <%= f.label :comment, "Comentário (opcional)", for: "comment-#{item.id}" %>
+        <%= f.text_area :comment, rows: 2, id: "comment-#{item.id}", maxlength: 1000 %>
+        <%= f.button "Enviar avaliação", class: "btn pequeno", style: "margin-top:8px" %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>

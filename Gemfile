@@ -10,6 +10,8 @@ gem "pg", "~> 1.1"
 gem "puma", ">= 5.0"
 # Senhas com hash (has_secure_password)
 gem "bcrypt", "~> 3.1.7"
+# Exportação do relatório de vendas (US15); no Ruby 3.4 o csv não vem mais embutido
+gem "csv"
 
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

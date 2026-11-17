@@ -1,6 +1,12 @@
 <%# Links do cabeçalho; cada área do sistema acrescenta os seus. %>
+<% if current_user&.admin? %>
+  <%= link_to "Painel", admin_root_path, class: "so-desktop" %>
+<% elsif current_user&.courier? %>
+  <%= link_to "Minhas entregas", courier_root_path, class: "so-desktop" %>
+<% end %>
 <% unless current_user&.admin? || current_user&.courier? %>
   <%= link_to "Favoritos", favorites_path, class: "so-desktop" %>
+  <%= link_to "Pedidos", orders_path, class: "so-desktop" %>
 <% end %>
 <% if signed_in? %>
   <%= link_to notifications_path, "aria-label": "Notificações" do %>🔔<% if (unread = current_user.unread_notifications_count).positive? %><span class="contador"><%= unread %></span><% end %><% end %>

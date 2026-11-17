@@ -17,6 +17,43 @@ Rails.application.routes.draw do
     end
   end
 
+  # Checkout (CU01: US07 entrega/retirada, US08 pagamento)
+  resource :checkout, only: %i[new create], path: "finalizar", path_names: { new: "pedido" }
+  resources :orders, only: %i[index show], path: "pedidos" do # acompanhamento (US09)
+    scope module: :orders do
+      resource :confirmation, only: :show, path: "confirmacao"
+      resource :pix_payment, only: :create, path: "pix"
+      resources :reviews, only: :create, path: "avaliacoes" # US10
+    end
+  end
+
+  # Administrador
+  namespace :admin do
+    root "dashboards#show" # US13
+    resources :cupcakes, except: :show, path: "produtos", path_names: { new: "novo", edit: "editar" } do # US11
+      resource :stock, only: :update, module: :cupcakes, path: "estoque" # US12
+    end
+    resources :coupons, only: %i[index create], path: "cupons" # US06
+    resource :report, only: :show, path: "relatorios"         # US15
+    resources :orders, only: [], path: "pedidos" do
+      scope module: :orders do
+        resource :status, only: :update            # US13
+        resource :courier, only: :update, path: "entregador" # US14
+      end
+    end
+  end
+
+  # Entregador (US16, US17, US18)
+  namespace :courier, path: "entregador" do
+    root "deliveries#index"
+    resources :deliveries, only: %i[index show], path: "entregas" do
+      scope module: :deliveries do
+        resource :contact, only: :create, path: "contato"
+        resource :completion, only: :create, path: "entregue"
+      end
+    end
+  end
+
   # Conta do usuário
   get "entrar" => "sessions#new", as: :new_session
   post "entrar" => "sessions#create", as: :session
