@@ -11,7 +11,7 @@ Autor: **Manoel Pereira Neto** (RGM 35828617).
 | Back-end | **Ruby 3.4 + Ruby on Rails 8.1**, padrão **MVC** |
 | Banco | PostgreSQL (em desenvolvimento, testes e produção) |
 | Testes | Minitest: 100 testes automatizados (modelos e integração) + RuboCop + Brakeman |
-| Hospedagem | Render (blueprint em `render.yaml`) |
+| Hospedagem | Render (blueprint em `render.yaml`) – **https://sweet-indulgence-cupcakes.onrender.com** |
 | Fotos dos cupcakes | Wikimedia Commons, licenças Creative Commons – [créditos](docs/creditos-das-fotos.md) |
 
 ## Documentação por situação-problema
