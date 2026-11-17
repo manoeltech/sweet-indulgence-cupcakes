@@ -75,7 +75,7 @@ Os controllers seguem o padrão REST do Rails: cada ação do usuário é um rec
 | US08 Pagamento | `SimulatedGateway` (crédito, débito, PIX), `Orders::PixPaymentsController` |
 | US09 Notificações | `Notification.notify`, 🔔 no cabeçalho, preferência no perfil |
 | US10 Avaliação | `Review` (só pedido entregue), `Orders::ReviewsController` |
-| US11 Catálogo | `Admin::CupcakesController`, `Cupcake#remove_from_menu!` |
+| US11 Catálogo | `Admin::CupcakesController`, `Cupcake#remove_from_menu!`, foto do produto em `CupcakePhoto` e `Cupcakes::PhotosController` |
 | US12 Estoque | `Cupcake#adjust_stock!`, `Cupcake.low_stock`, `Admin::Cupcakes::StocksController` |
 | US13 Painel de pedidos | `Admin::DashboardsController`, `Order#advance_to!` |
 | US14 Atribuir entregador | `Order#assign_courier!` (máx. 3 simultâneas) |

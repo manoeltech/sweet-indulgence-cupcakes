@@ -80,4 +80,14 @@ class AuthenticationTest < ActionDispatch::IntegrationTest
 
     assert_response :redirect
   end
+
+  test "login e cadastro marcam os campos obrigatórios" do
+    get new_session_path
+    assert_select "label[for=email] abbr.obrigatorio", "*"
+    assert_select "label[for=password] abbr.obrigatorio", "*"
+
+    get new_registration_path
+    assert_select "abbr.obrigatorio", 5 # legenda + nome, e-mail, senha e confirmação
+    assert_select "label[for=user_phone] abbr", count: 0
+  end
 end

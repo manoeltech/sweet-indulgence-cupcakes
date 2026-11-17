@@ -48,6 +48,6 @@ class Admin::CupcakesController < Admin::BaseController
 
   def cupcake_params
     params.expect(cupcake: [ :name, :category_id, :description, :ingredients, :price, :stock, :min_stock,
-                             :calories, :fat_grams, :sugar_grams, :allergens, :color, :active ])
+                             :calories, :fat_grams, :sugar_grams, :allergens, :color, :active, :photo_upload ])
   end
 end

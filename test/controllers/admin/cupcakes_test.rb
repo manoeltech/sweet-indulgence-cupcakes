@@ -61,4 +61,49 @@ class Admin::CupcakesTest < ActionDispatch::IntegrationTest
     assert_equal "Informe um estoque inteiro igual ou maior que zero.", flash[:error]
     assert_equal 30, cupcakes(:caramelo).reload.stock
   end
+
+  test "cadastra cupcake com foto e a vitrine mostra a foto enviada" do
+    post admin_cupcakes_path, params: valid_params(photo_upload: fixture_file_upload("cupcake.png", "image/png"))
+    assert_redirected_to admin_cupcakes_path
+
+    cupcake = Cupcake.find_by!(name: "Pistache")
+    get root_path
+    assert_select "img[alt='Pistache'][src=?]", cupcake_photo_path(cupcake, v: cupcake.photo_updated_at.to_i)
+
+    get cupcake_photo_path(cupcake)
+    assert_response :success
+    assert_equal "image/png", response.media_type
+    assert_equal file_fixture("cupcake.png").binread, response.body.b
+  end
+
+  test "arquivo que não é imagem volta com o erro e não cria o cupcake" do
+    assert_no_difference -> { Cupcake.count } do
+      post admin_cupcakes_path, params: valid_params(photo_upload: fixture_file_upload("nao-e-imagem.txt", "image/png"))
+    end
+
+    assert_response :unprocessable_entity
+    assert_select ".msg-erro", "A foto precisa ser um arquivo JPG, PNG ou WebP."
+  end
+
+  test "editar sem enviar foto mantém a foto atual" do
+    cupcake = cupcakes(:red_velvet)
+    cupcake.update!(photo_upload: fixture_file_upload("cupcake.png", "image/png"))
+
+    patch admin_cupcake_path(cupcake), params: { cupcake: { name: "Red Velvet Especial" } }
+    assert_redirected_to admin_cupcakes_path
+    assert cupcake.reload.uploaded_photo?
+    assert_equal "Red Velvet Especial", cupcake.name
+  end
+
+  test "formulário marca os campos obrigatórios" do
+    get new_admin_cupcake_path
+
+    assert_select ".legenda-obrigatorio", /Campos obrigatórios/
+    %w[name category_id description price stock min_stock].each do |field|
+      assert_select "label[for=cupcake_#{field}] abbr.obrigatorio[title=obrigatório]", "*"
+      assert_select "[name='cupcake[#{field}]'][required]"
+    end
+    assert_select "label[for=cupcake_ingredients] abbr", count: 0
+    assert_select "input[type=file][name='cupcake[photo_upload]'][accept='image/jpeg,image/png,image/webp']"
+  end
 end

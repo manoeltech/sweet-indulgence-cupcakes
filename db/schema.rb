@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_16_230750) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_17_210740) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -58,6 +58,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_16_230750) do
     t.check_constraint "percentage >= 1 AND percentage <= 90", name: "coupons_percentage_range"
   end
 
+  create_table "cupcake_photos", force: :cascade do |t|
+    t.bigint "cupcake_id", null: false
+    t.string "content_type", null: false
+    t.binary "data", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cupcake_id"], name: "index_cupcake_photos_on_cupcake_id", unique: true
+  end
+
   create_table "cupcakes", force: :cascade do |t|
     t.bigint "category_id", null: false
     t.string "name", limit: 80, null: false
@@ -74,6 +83,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_16_230750) do
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "photo_updated_at"
     t.index ["category_id"], name: "index_cupcakes_on_category_id"
     t.check_constraint "price > 0::numeric", name: "cupcakes_price_positive"
     t.check_constraint "stock >= 0", name: "cupcakes_stock_not_negative"
@@ -181,6 +191,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_16_230750) do
   add_foreign_key "addresses", "users"
   add_foreign_key "contact_logs", "orders"
   add_foreign_key "contact_logs", "users", column: "courier_id"
+  add_foreign_key "cupcake_photos", "cupcakes"
   add_foreign_key "cupcakes", "categories"
   add_foreign_key "favorites", "cupcakes"
   add_foreign_key "favorites", "users"
