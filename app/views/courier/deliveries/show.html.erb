@@ -1,8 +1,12 @@
 <% content_for :title, "Pedido ##{@order.code}" %>
 <p><%= link_to "← Minhas entregas", courier_deliveries_path %></p>
 <h1>Pedido #<%= @order.code %></h1>
+<div class="endereco-entrega" data-teste="endereco-entrega">
+  <span>🛵 Entrega no endereço</span>
+  <strong><%= @order.delivery_address %></strong>
+</div>
 <div class="card">
-  <p><b><%= @order.customer.name %></b><br>📍 <%= @order.delivery_address %><br>📞 <%= @order.customer.phone.presence || "sem telefone" %></p>
+  <p><b><%= @order.customer.name %></b><br>📞 <%= @order.customer.phone.presence || "sem telefone" %></p>
   <p><% @order.items.each do |item| %><%= item.quantity %>× <%= item.cupcake.name %><br><% end %></p>
   <p class="ajuda">Pagamento: <%= @order.payment_label %> (já pago no app)</p>
   <p style="display:flex;gap:8px;flex-wrap:wrap">

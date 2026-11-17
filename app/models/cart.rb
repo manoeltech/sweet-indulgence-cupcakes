@@ -40,6 +40,10 @@ class Cart
     set(cupcake, quantity_of(cupcake) + delta)
   end
 
+  def include?(cupcake)
+    items.key?(cupcake.id)
+  end
+
   def remove(cupcake)
     @session["cart"].delete(cupcake.id.to_s)
     @lines = nil

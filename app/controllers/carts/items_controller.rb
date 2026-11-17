@@ -12,7 +12,11 @@ class Carts::ItemsController < ApplicationController
 
   def update
     cart.change(cupcake, params[:step] == "up" ? 1 : -1)
-    redirect_to cart_path
+    if cart.include?(cupcake)
+      redirect_to cart_path
+    else
+      redirect_to cart_path, success: "#{cupcake.name} removido do carrinho."
+    end
   end
 
   def destroy

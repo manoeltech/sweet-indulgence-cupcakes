@@ -22,6 +22,28 @@ class CartsTest < ActionDispatch::IntegrationTest
     assert_select ".vazio", /Seu carrinho está vazio/
   end
 
+  test "diminuir até zero remove o item e avisa" do
+    cupcake = cupcakes(:red_velvet)
+    post cart_items_path, params: { cupcake_id: cupcake.id, quantity: 1 }
+
+    patch cart_item_path(cupcake), params: { step: "down" }
+    assert_equal "Red Velvet removido do carrinho.", flash[:success]
+    follow_redirect!
+    assert_select ".msg-sucesso", "Red Velvet removido do carrinho."
+    assert_select ".vazio", /Seu carrinho está vazio/
+  end
+
+  test "diminuir sem zerar não mostra aviso" do
+    cupcake = cupcakes(:red_velvet)
+    post cart_items_path, params: { cupcake_id: cupcake.id, quantity: 2 }
+    follow_redirect!
+
+    patch cart_item_path(cupcake), params: { step: "down" }
+    follow_redirect!
+    assert_select ".msg-sucesso", count: 0
+    assert_select "[data-teste=item-carrinho]", 1
+  end
+
   test "não adiciona mais do que o estoque" do
     post cart_items_path, params: { cupcake_id: cupcakes(:caramelo).id, quantity: 5 }, headers: { "HTTP_REFERER" => cupcake_url(cupcakes(:caramelo)) }
 

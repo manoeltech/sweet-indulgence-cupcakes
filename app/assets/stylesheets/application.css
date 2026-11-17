@@ -122,3 +122,18 @@ footer{border-top:1px solid var(--linha);color:var(--suave);font-size:.82rem;pad
 @media (max-width:520px){.linha-item .nome{flex:1 1 calc(100% - 90px)}.linha-item .valor{min-width:0;margin-left:auto}}
 /* .admin-nav é declarada depois de .so-desktop e venceria a regra do celular. */
 @media (max-width:720px){.admin-nav.so-desktop{display:none}}
+/* Campo com erro de validação: borda e rótulo em vermelho, sem mexer no layout. */
+.field_with_errors{display:contents}
+.field_with_errors label{color:var(--erro)}
+.field_with_errors input,.field_with_errors select,.field_with_errors textarea{border-color:var(--erro);background:var(--erro-bg)}
+/* Endereço em destaque para o entregador (US16). */
+.endereco-entrega{background:var(--rosa-claro);border:2px solid var(--rosa);border-radius:var(--raio);padding:14px 16px;margin-bottom:14px}
+.endereco-entrega span{display:block;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--rosa-esc)}
+.endereco-entrega strong{display:block;font-size:1.25rem;line-height:1.35;margin-top:4px}
+/* Celular: área de toque de pelo menos 44 px em botões e campos. */
+@media (max-width:720px){
+  .btn,.btn.pequeno,.inline input,.inline select,.qtd button,.coracao button{min-height:44px;min-width:44px}
+  .qtd button{width:44px;height:44px}
+  .coracao button{width:44px;height:44px}
+  input[type=checkbox],input[type=radio],.inline input[type=checkbox]{min-width:0;min-height:0;width:22px;height:22px}
+}

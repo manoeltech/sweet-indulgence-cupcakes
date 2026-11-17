@@ -6,9 +6,10 @@ class Coupon < ApplicationRecord
 
   validates :code, presence: { message: "Informe o código do cupom." }
   validates :code, uniqueness: { message: "Já existe um cupom com esse código." }
-  validates :percentage, numericality: { only_integer: true, in: 1..90, message: "O desconto precisa ser de 1 a 90%." }
-  validates :valid_until, presence: { message: "Informe a validade." }
-  validates :usage_limit, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
+  validates :percentage, presence: { message: "Informe o desconto em %." }
+  validates :percentage, numericality: { only_integer: true, in: 1..90, message: "O desconto precisa ser um número inteiro de 1 a 90%." }, allow_nil: true
+  validates :valid_until, presence: { message: "Informe até quando o cupom vale." }
+  validates :usage_limit, numericality: { only_integer: true, greater_than: 0, message: "O limite de usos precisa ser um número inteiro maior que zero (ou deixe em branco)." }, allow_nil: true
 
   # US06 CA#3: informa se o cupom é inválido, expirado ou esgotado.
   def self.find_valid!(code, today: Time.zone.today)

@@ -15,7 +15,21 @@ class Admin::CouponsAndReportsTest < ActionDispatch::IntegrationTest
     post admin_coupons_path, params: { coupon: { code: "BEMVINDO10", percentage: "95", valid_until: "" } }
 
     assert_response :unprocessable_entity
-    assert_select ".msg-erro", /Já existe um cupom com esse código.*O desconto precisa ser de 1 a 90%.*Informe a validade./
+    assert_select ".msg-erro", "Já existe um cupom com esse código."
+    assert_select ".msg-erro", "O desconto precisa ser um número inteiro de 1 a 90%."
+    assert_select ".msg-erro", "Informe até quando o cupom vale."
+    assert_select ".field_with_errors input[name='coupon[percentage]']"
+    assert_select ".field_with_errors input[name='coupon[valid_until]']"
+  end
+
+  test "cada campo do cupom tem a própria mensagem" do
+    post admin_coupons_path, params: { coupon: { code: "", percentage: "", valid_until: 1.month.from_now.to_date, usage_limit: "0" } }
+
+    assert_response :unprocessable_entity
+    assert_select ".msg-erro", "Informe o código do cupom."
+    assert_select ".msg-erro", "Informe o desconto em %."
+    assert_select ".msg-erro", "O limite de usos precisa ser um número inteiro maior que zero (ou deixe em branco)."
+    assert_select ".field_with_errors input[name='coupon[usage_limit]']"
   end
 
   test "lista mostra cupom expirado" do
