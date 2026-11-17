@@ -1,0 +1,37 @@
+<% content_for :title, @cupcake.name %>
+<p><%= link_to "← Voltar à vitrine", root_path %></p>
+<div class="detalhe">
+  <div class="foto"><%= image_tag cupcake_image_path(@cupcake, format: :svg), alt: @cupcake.name, width: 480, height: 480 %></div>
+  <div>
+    <p class="ajuda" style="margin:0"><%= @cupcake.category.name %></p>
+    <h1 style="margin-bottom:4px"><%= @cupcake.name %></h1>
+    <p class="preco" style="font-size:1.4rem;margin:0 0 10px"><%= brl @cupcake.price %></p>
+    <% if (average = @cupcake.average_rating) %>
+      <p class="ajuda">★ <%= number_with_precision average, precision: 1 %> (<%= pluralize @cupcake.reviews.count, "avaliação", plural: "avaliações" %>)</p>
+    <% end %>
+    <p><%= @cupcake.description %></p>
+    <%= render "cupcakes/detail_actions", cupcake: @cupcake %>
+
+    <h2>Alérgenos</h2>
+    <% if @cupcake.allergen_list.any? %>
+      <div class="tags"><% @cupcake.allergen_list.each do |allergen| %><span class="tag"><%= allergen %></span><% end %></div>
+    <% else %>
+      <p class="ajuda">Nenhum alérgeno informado.</p>
+    <% end %>
+
+    <h2>Informação nutricional <span class="ajuda">(1 unidade)</span></h2>
+    <table class="resumo" style="background:none">
+      <tr><td>Calorias</td><td><%= @cupcake.calories || "–" %> kcal</td></tr>
+      <tr><td>Gorduras totais</td><td><%= @cupcake.fat_grams ? number_with_precision(@cupcake.fat_grams, precision: 1) : "–" %> g</td></tr>
+      <tr><td>Açúcares</td><td><%= @cupcake.sugar_grams ? number_with_precision(@cupcake.sugar_grams, precision: 1) : "–" %> g</td></tr>
+    </table>
+    <h2>Ingredientes</h2>
+    <p><%= @cupcake.ingredients %></p>
+  </div>
+</div>
+<% if @reviews.any? %>
+  <h2>O que os clientes acharam</h2>
+  <% @reviews.each do |review| %>
+    <div class="card" style="margin-bottom:8px"><b><%= "★" * review.rating %></b> · <%= review.user.first_name %><br><%= review.comment %></div>
+  <% end %>
+<% end %>
