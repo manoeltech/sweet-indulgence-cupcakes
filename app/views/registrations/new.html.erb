@@ -1,0 +1,16 @@
+<% content_for :title, "Criar conta" %>
+<%= form_with model: @user, url: registration_path(return_to: params[:return_to]), class: "card", html: { style: "max-width:460px;margin:0 auto" } do |f| %>
+  <h1>Criar conta</h1>
+  <%= f.label :name, "Nome" %>
+  <%= f.text_field :name, required: true, autocomplete: "name" %>
+  <%= f.label :email, "E-mail" %>
+  <%= f.email_field :email, required: true, autocomplete: "email" %>
+  <%= f.label :phone, "Celular (para o entregador falar com você)" %>
+  <%= f.telephone_field :phone, inputmode: "tel", placeholder: "(83) 99999-9999" %>
+  <%= f.label :password, "Senha (mínimo 6 caracteres)" %>
+  <%= f.password_field :password, required: true, minlength: 6, autocomplete: "new-password" %>
+  <%= f.label :password_confirmation, "Confirme a senha" %>
+  <%= f.password_field :password_confirmation, required: true, autocomplete: "new-password" %>
+  <%= f.button "Criar conta", class: "btn bloco", style: "margin-top:16px" %>
+  <p style="text-align:center">Já tem conta? <%= link_to "Entrar", new_session_path(return_to: params[:return_to]) %></p>
+<% end %>

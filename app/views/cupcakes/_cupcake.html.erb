@@ -1,0 +1,12 @@
+<article class="produto" data-teste="produto">
+  <%= link_to cupcake_path(cupcake), class: "foto" do %>
+    <%= image_tag cupcake_image_path(cupcake, format: :svg), alt: cupcake.name, width: 200, height: 200, loading: "lazy" %>
+  <% end %>
+  <%= render "cupcakes/card_actions_top", cupcake: cupcake %>
+  <div class="info">
+    <%= link_to cupcake.name, cupcake_path(cupcake) %>
+    <span class="preco"><%= brl cupcake.price %></span>
+    <% if cupcake.low_stock? %><span class="selo">Últimas <%= cupcake.stock %> unidades</span><% end %>
+    <%= render "cupcakes/card_actions_bottom", cupcake: cupcake %>
+  </div>
+</article>

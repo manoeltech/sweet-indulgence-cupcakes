@@ -1,0 +1,7 @@
+classicos:
+  name: Clássicos
+  slug: classicos
+
+frutas:
+  name: Frutas
+  slug: frutas
