@@ -10,8 +10,9 @@ Autor: **Manoel Pereira Neto** (RGM 35828617).
 | Front-end | HTML, CSS e JavaScript puro (views ERB), mobile-first |
 | Back-end | **Ruby 3.4 + Ruby on Rails 8.1**, padrão **MVC** |
 | Banco | PostgreSQL (em desenvolvimento, testes e produção) |
-| Testes | Minitest: 99 testes automatizados (modelos e integração) + RuboCop + Brakeman |
+| Testes | Minitest: 100 testes automatizados (modelos e integração) + RuboCop + Brakeman |
 | Hospedagem | Render (blueprint em `render.yaml`) |
+| Fotos dos cupcakes | Wikimedia Commons, licenças Creative Commons – [créditos](docs/creditos-das-fotos.md) |
 
 ## Documentação por situação-problema
 
@@ -50,7 +51,7 @@ Pré-requisitos: Ruby 3.4 e um PostgreSQL rodando em `localhost` (usuário e sen
 bundle install
 bin/rails db:prepare   # cria o banco, as tabelas e os dados de demonstração
 bin/rails server       # http://localhost:3000
-bin/rails test         # 99 testes
+bin/rails test         # 100 testes
 ```
 
 Contas de demonstração (senha `cupcake123`): `cliente@sweetindulgence.com`, `admin@sweetindulgence.com`, `entregador@sweetindulgence.com`.

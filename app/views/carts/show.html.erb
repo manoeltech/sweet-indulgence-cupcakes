@@ -8,7 +8,7 @@
       <% cart.lines.each do |line| %>
         <% cupcake = line.cupcake %>
         <div class="linha-item" data-teste="item-carrinho">
-          <%= image_tag cupcake_image_path(cupcake, format: :svg), alt: "" %>
+          <%= cupcake_image_tag(cupcake, alt: "") %>
           <div class="nome"><b><%= cupcake.name %></b><br><span class="ajuda"><%= brl cupcake.price %> cada</span></div>
           <div class="qtd">
             <%= button_to "−", cart_item_path(cupcake), method: :patch, params: { step: "down" }, "aria-label": "Diminuir" %>

@@ -35,6 +35,11 @@ class Cupcake < ApplicationRecord
     active.where("stock <= min_stock").order(:stock)
   end
 
+  # Foto real do sabor, se existir em app/assets/images/cupcakes/ (créditos em docs/creditos-das-fotos.md).
+  def photo_asset
+    "cupcakes/#{name.parameterize}.jpg"
+  end
+
   def allergen_list
     allergens.split(",").map(&:strip).reject(&:blank?)
   end

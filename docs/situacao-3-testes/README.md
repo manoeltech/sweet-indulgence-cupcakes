@@ -14,7 +14,7 @@ Os testes foram escritos junto com cada tarefa, na mesma branch, e cada Pull Req
 
 Como rodar: `bin/rails test` (testes), `bin/rubocop` (estilo) e `bin/brakeman` (segurança).
 
-**Resultado atual: 99 testes, 397 verificações, 0 falhas** ([saída completa](evidencias/minitest-execucao-final.txt)). RuboCop e Brakeman sem apontamentos ([saída](evidencias/qualidade-rubocop-brakeman.txt)).
+**Resultado atual: 100 testes, 401 verificações, 0 falhas** ([saída completa](evidencias/minitest-execucao-final.txt)). RuboCop e Brakeman sem apontamentos ([saída](evidencias/qualidade-rubocop-brakeman.txt)).
 
 ## 2. Laudo de qualidade
 

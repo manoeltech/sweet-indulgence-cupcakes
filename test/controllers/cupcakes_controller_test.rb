@@ -45,4 +45,14 @@ class CupcakesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "image/svg+xml", response.media_type
     assert_includes response.body, "#b91c1c"
   end
+
+  test "sabor com foto real mostra a foto; cupcake sem foto mostra a ilustração" do
+    sem_foto = cupcakes(:morango)
+    sem_foto.update!(name: "Pistache da Casa")
+
+    get root_path
+
+    assert_select "img[alt='Red Velvet'][src*='cupcakes/red-velvet']"
+    assert_select "img[alt='Pistache da Casa'][src='#{cupcake_image_path(sem_foto, format: :svg)}']"
+  end
 end

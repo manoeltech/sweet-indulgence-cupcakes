@@ -63,7 +63,8 @@ label{display:block;font-weight:600;font-size:.88rem;margin:12px 0 4px}
 .selo{display:inline-block;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--aviso-bg);color:var(--aviso)}
 .vazio{text-align:center;color:var(--suave);padding:40px 0}
 .detalhe{display:grid;gap:24px;grid-template-columns:1fr 1fr}
-.detalhe .foto{background:var(--rosa-claro);border-radius:var(--raio)}
+.detalhe .foto{background:var(--rosa-claro);border-radius:var(--raio);overflow:hidden}
+.produto a.foto img,.detalhe .foto img{width:100%;height:auto;aspect-ratio:1;object-fit:cover}
 @media (max-width:720px){.detalhe{grid-template-columns:1fr}}
 .tags{display:flex;flex-wrap:wrap;gap:6px}
 .tag{background:var(--erro-bg);color:var(--erro);font-size:.8rem;font-weight:700;padding:3px 10px;border-radius:999px}

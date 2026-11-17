@@ -1,7 +1,7 @@
 <% content_for :title, @cupcake.name %>
 <p><%= link_to "← Voltar à vitrine", root_path %></p>
 <div class="detalhe">
-  <div class="foto"><%= image_tag cupcake_image_path(@cupcake, format: :svg), alt: @cupcake.name, width: 480, height: 480 %></div>
+  <div class="foto"><%= cupcake_image_tag(@cupcake, alt: @cupcake.name, width: 480, height: 480) %></div>
   <div>
     <p class="ajuda" style="margin:0"><%= @cupcake.category.name %></p>
     <h1 style="margin-bottom:4px"><%= @cupcake.name %></h1>
