@@ -3,6 +3,7 @@ class Cupcake < ApplicationRecord
   belongs_to :category, optional: true
   has_many :reviews, dependent: :destroy
   has_many :order_items, dependent: :restrict_with_error
+  has_one :photo, class_name: "CupcakePhoto", dependent: :destroy, autosave: true
 
   validates :category, presence: { message: "Escolha uma categoria." }
   validates :name, presence: { message: "Informe o nome do cupcake." }
@@ -13,6 +14,21 @@ class Cupcake < ApplicationRecord
   validates :calories, numericality: { only_integer: true, greater_than_or_equal_to: 0, message: "Calorias precisam ser um número inteiro." }, allow_nil: true
   validates :fat_grams, :sugar_grams, numericality: { greater_than_or_equal_to: 0, message: "Informações nutricionais precisam ser números." }, allow_nil: true
   validates :color, format: { with: /\A#\h{6}\z/, message: "Cor inválida." }
+  validate { errors.add(:photo_upload, @photo_upload_error) if @photo_upload_error }
+
+  # Arquivo enviado no formulário do administrador (JPG, PNG ou WebP de até 2 MB).
+  def photo_upload=(file)
+    return if file.blank?
+
+    return @photo_upload_error = "A foto precisa ter até 2 MB." if file.size > CupcakePhoto::MAX_BYTES
+
+    bytes = file.read.b
+    content_type = CupcakePhoto.content_type_of(bytes)
+    return @photo_upload_error = "A foto precisa ser um arquivo JPG, PNG ou WebP." unless content_type
+
+    (photo || build_photo).assign_attributes(content_type: content_type, data: bytes)
+    self.photo_updated_at = Time.current
+  end
 
   # O administrador digita "12,50": vírgula decimal vira ponto antes de converter.
   %i[price fat_grams sugar_grams].each do |attribute|
@@ -33,6 +49,10 @@ class Cupcake < ApplicationRecord
   # US12 CA#3: alerta de estoque baixo para o administrador.
   def self.low_stock
     active.where("stock <= min_stock").order(:stock)
+  end
+
+  def uploaded_photo?
+    photo_updated_at.present?
   end
 
   # Foto real do sabor, se existir em app/assets/images/cupcakes/ (créditos em docs/creditos-das-fotos.md).

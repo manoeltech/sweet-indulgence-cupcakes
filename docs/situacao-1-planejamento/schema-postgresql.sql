@@ -86,6 +86,24 @@ CREATE SEQUENCE public.coupons_id_seq
 
 ALTER SEQUENCE public.coupons_id_seq OWNED BY public.coupons.id;
 
+CREATE TABLE public.cupcake_photos (
+    id bigint NOT NULL,
+    cupcake_id bigint NOT NULL,
+    content_type character varying NOT NULL,
+    data bytea NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+CREATE SEQUENCE public.cupcake_photos_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE public.cupcake_photos_id_seq OWNED BY public.cupcake_photos.id;
+
 CREATE TABLE public.cupcakes (
     id bigint NOT NULL,
     category_id bigint NOT NULL,
@@ -103,6 +121,7 @@ CREATE TABLE public.cupcakes (
     active boolean DEFAULT true NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
+    photo_updated_at timestamp(6) without time zone,
     CONSTRAINT cupcakes_price_positive CHECK ((price > (0)::numeric)),
     CONSTRAINT cupcakes_stock_not_negative CHECK ((stock >= 0))
 );
@@ -279,6 +298,8 @@ ALTER TABLE ONLY public.contact_logs ALTER COLUMN id SET DEFAULT nextval('public
 
 ALTER TABLE ONLY public.coupons ALTER COLUMN id SET DEFAULT nextval('public.coupons_id_seq'::regclass);
 
+ALTER TABLE ONLY public.cupcake_photos ALTER COLUMN id SET DEFAULT nextval('public.cupcake_photos_id_seq'::regclass);
+
 ALTER TABLE ONLY public.cupcakes ALTER COLUMN id SET DEFAULT nextval('public.cupcakes_id_seq'::regclass);
 
 ALTER TABLE ONLY public.delivery_zones ALTER COLUMN id SET DEFAULT nextval('public.delivery_zones_id_seq'::regclass);
@@ -309,6 +330,9 @@ ALTER TABLE ONLY public.contact_logs
 
 ALTER TABLE ONLY public.coupons
     ADD CONSTRAINT coupons_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY public.cupcake_photos
+    ADD CONSTRAINT cupcake_photos_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY public.cupcakes
     ADD CONSTRAINT cupcakes_pkey PRIMARY KEY (id);
@@ -348,6 +372,8 @@ CREATE INDEX index_contact_logs_on_courier_id ON public.contact_logs USING btree
 CREATE INDEX index_contact_logs_on_order_id ON public.contact_logs USING btree (order_id);
 
 CREATE UNIQUE INDEX index_coupons_on_code ON public.coupons USING btree (code);
+
+CREATE UNIQUE INDEX index_cupcake_photos_on_cupcake_id ON public.cupcake_photos USING btree (cupcake_id);
 
 CREATE INDEX index_cupcakes_on_category_id ON public.cupcakes USING btree (category_id);
 
@@ -413,6 +439,9 @@ ALTER TABLE ONLY public.reviews
 
 ALTER TABLE ONLY public.orders
     ADD CONSTRAINT fk_rails_907a5e9f62 FOREIGN KEY (coupon_id) REFERENCES public.coupons(id);
+
+ALTER TABLE ONLY public.cupcake_photos
+    ADD CONSTRAINT fk_rails_9f75f31e41 FOREIGN KEY (cupcake_id) REFERENCES public.cupcakes(id);
 
 ALTER TABLE ONLY public.favorites
     ADD CONSTRAINT fk_rails_a0bd012b8a FOREIGN KEY (cupcake_id) REFERENCES public.cupcakes(id);

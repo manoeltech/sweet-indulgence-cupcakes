@@ -9,12 +9,13 @@
       <% @user.addresses.each do |address| %><p>📍 <%= address %></p><% end %>
       <% if @user.addresses.empty? %><p class="ajuda">Nenhum endereço salvo.</p><% end %>
       <%= form_with model: @address, url: profile_addresses_path do |f| %>
-        <%= f.label :street, "Rua" %><%= f.text_field :street %>
+        <%= required_fields_legend %>
+        <%= required_label f, :street, "Rua" %><%= f.text_field :street, required: true %>
         <div class="duas" style="grid-template-columns:1fr 2fr;gap:10px">
-          <div><%= f.label :number, "Número" %><%= f.text_field :number %></div>
-          <div><%= f.label :district, "Bairro" %><%= f.text_field :district %></div>
+          <div><%= required_label f, :number, "Número" %><%= f.text_field :number, required: true %></div>
+          <div><%= required_label f, :district, "Bairro" %><%= f.text_field :district, required: true %></div>
         </div>
-        <%= f.label :zip_code, "CEP" %><%= f.text_field :zip_code, inputmode: "numeric", placeholder: "00000-000" %>
+        <%= required_label f, :zip_code, "CEP" %><%= f.text_field :zip_code, inputmode: "numeric", placeholder: "00000-000", required: true %>
         <%= f.button "Salvar endereço", class: "btn pequeno", style: "margin-top:10px" %>
       <% end %>
     <% end %>

@@ -67,10 +67,24 @@ Produtos do cardápio.
 | allergens | VARCHAR(200) | não |  |  | Alérgenos separados por vírgula (US03) |
 | color | VARCHAR(7) | não |  | #f9a8d4 | Cor da cobertura na ilustração |
 | active | BOOLEAN | não |  | true | Falso quando sai do cardápio (CU02) |
+| photo_updated_at | TIMESTAMP | sim |  |  | Quando o administrador enviou a foto; vazio = sem foto enviada (a URL da foto leva esse valor para o cache) |
 | created_at | TIMESTAMP | não |  |  | Criado em (UTC) |
 | updated_at | TIMESTAMP | não |  |  | Atualizado em (UTC) |
 
 Restrições: `price > 0::numeric`; `stock >= 0`
+
+## cupcake_photos
+
+Foto do produto enviada pelo administrador (US11). Fica no banco porque o disco do Render gratuito é apagado a cada reinício; tabela separada para a vitrine não carregar os bytes com cada cupcake.
+
+| Coluna | Tipo | Nulo? | Chave | Padrão | Descrição |
+|---|---|---|---|---|---|
+| id | BIGINT | não | PK |  | Identificador |
+| cupcake_id | BIGINT | não | FK → cupcakes, única |  | Cupcake da foto (uma por cupcake) |
+| content_type | VARCHAR | não |  |  | `image/jpeg`, `image/png` ou `image/webp`, lido dos primeiros bytes do arquivo |
+| data | BYTEA | não |  |  | Arquivo da foto (até 2 MB) |
+| created_at | TIMESTAMP | não |  |  | Criado em (UTC) |
+| updated_at | TIMESTAMP | não |  |  | Atualizado em (UTC) |
 
 ## favorites
 

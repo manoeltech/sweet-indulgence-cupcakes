@@ -4,12 +4,13 @@
   <div>
     <section class="card">
       <h2 style="margin-top:0">1. Como quer receber?</h2>
+      <%= required_fields_legend %>
       <div class="opcoes">
         <label><%= f.radio_button :fulfillment, "delivery", checked: @form.fetch(:fulfillment, "delivery") == "delivery" %>🛵 Entrega em casa</label>
         <label><%= f.radio_button :fulfillment, "pickup", checked: @form[:fulfillment] == "pickup" %>🏪 Retirar na loja</label>
       </div>
       <div id="bloco-entrega">
-        <%= f.label :delivery_zone_id, "Bairro / zona de entrega" %>
+        <%= required_label f, :delivery_zone_id, "Bairro / zona de entrega" %>
         <%= f.select :delivery_zone_id,
               DeliveryZone.order(:fee).map { |zone| [ "#{zone.name} — #{brl zone.fee} (~#{zone.eta_minutes} min)", zone.id, { data: { fee: zone.fee } } ] },
               { include_blank: "Selecione…", selected: @form[:delivery_zone_id] } %>
@@ -17,7 +18,11 @@
           <%= f.label :saved_address_id, "Endereço salvo" %>
           <%= f.select :saved_address_id, current_user.addresses.map { |a| [ a.to_s, a.id ] }, { include_blank: "Digitar outro endereço", selected: @form[:saved_address_id] } %>
         <% end %>
-        <%= f.label :address, "Endereço completo" %>
+        <% if current_user.addresses.any? %>
+          <%= f.label :address, "Endereço completo (ou escolha um salvo acima)" %>
+        <% else %>
+          <%= required_label f, :address, "Endereço completo" %>
+        <% end %>
         <%= f.text_field :address, value: @form[:address], placeholder: "Rua, número, bairro, CEP", autocomplete: "street-address" %>
       </div>
       <div id="bloco-retirada" class="oculto">
@@ -35,13 +40,13 @@
       </div>
       <div id="bloco-cartao">
         <%= f.fields_for :card do |card| %>
-          <%= card.label :number, "Número do cartão" %>
+          <%= required_label card, :number, "Número do cartão" %>
           <%= card.text_field :number, inputmode: "numeric", autocomplete: "cc-number", placeholder: "0000 0000 0000 0000" %>
-          <%= card.label :name, "Nome impresso" %>
+          <%= required_label card, :name, "Nome impresso" %>
           <%= card.text_field :name, autocomplete: "cc-name", value: @form.dig(:card, :name) %>
           <div class="duas" style="grid-template-columns:1fr 1fr;gap:10px">
-            <div><%= card.label :expiry, "Validade" %><%= card.text_field :expiry, placeholder: "MM/AA", autocomplete: "cc-exp", value: @form.dig(:card, :expiry) %></div>
-            <div><%= card.label :cvv, "CVV" %><%= card.text_field :cvv, inputmode: "numeric", autocomplete: "cc-csc", maxlength: 4 %></div>
+            <div><%= required_label card, :expiry, "Validade" %><%= card.text_field :expiry, placeholder: "MM/AA", autocomplete: "cc-exp", value: @form.dig(:card, :expiry) %></div>
+            <div><%= required_label card, :cvv, "CVV" %><%= card.text_field :cvv, inputmode: "numeric", autocomplete: "cc-csc", maxlength: 4 %></div>
           </div>
         <% end %>
         <p class="ajuda">Ambiente de demonstração: use o cartão 4111 1111 1111 1111 (aprovado) ou 4000 0000 0000 0002 (recusado). Não digite um cartão real.</p>

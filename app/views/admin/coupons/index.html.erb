@@ -15,10 +15,11 @@
   </table></div>
   <%= form_with model: [ :admin, @coupon ], class: "card", html: { style: "align-self:start" } do |f| %>
     <h2 style="margin-top:0">Novo cupom</h2>
-    <%= f.label :code, "Código" %><%= f.text_field :code, style: "text-transform:uppercase" %>
+    <%= required_fields_legend %>
+    <%= required_label f, :code, "Código" %><%= f.text_field :code, style: "text-transform:uppercase", required: true %>
     <%= f.label :description, "Descrição" %><%= f.text_field :description %>
-    <%= f.label :percentage, "Desconto (%)" %><%= f.number_field :percentage, min: 1, max: 90 %>
-    <%= f.label :valid_until, "Válido até" %><%= f.date_field :valid_until %>
+    <%= required_label f, :percentage, "Desconto (%)" %><%= f.number_field :percentage, min: 1, max: 90, required: true %>
+    <%= required_label f, :valid_until, "Válido até" %><%= f.date_field :valid_until, required: true %>
     <%= f.label :usage_limit, "Limite de usos (opcional)" %><%= f.number_field :usage_limit, min: 1 %>
     <%= f.button "Criar cupom", class: "btn bloco", style: "margin-top:14px" %>
   <% end %>
