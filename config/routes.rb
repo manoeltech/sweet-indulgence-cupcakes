@@ -33,10 +33,23 @@ Rails.application.routes.draw do
     resources :cupcakes, except: :show, path: "produtos", path_names: { new: "novo", edit: "editar" } do # US11
       resource :stock, only: :update, module: :cupcakes, path: "estoque" # US12
     end
+    resources :coupons, only: %i[index create], path: "cupons" # US06
+    resource :report, only: :show, path: "relatorios"         # US15
     resources :orders, only: [], path: "pedidos" do
       scope module: :orders do
         resource :status, only: :update            # US13
         resource :courier, only: :update, path: "entregador" # US14
+      end
+    end
+  end
+
+  # Entregador (US16, US17, US18)
+  namespace :courier, path: "entregador" do
+    root "deliveries#index"
+    resources :deliveries, only: %i[index show], path: "entregas" do
+      scope module: :deliveries do
+        resource :contact, only: :create, path: "contato"
+        resource :completion, only: :create, path: "entregue"
       end
     end
   end

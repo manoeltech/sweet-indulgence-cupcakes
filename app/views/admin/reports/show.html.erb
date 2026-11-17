@@ -1,0 +1,36 @@
+<% content_for :title, "Relatórios" %>
+<%= render "admin/nav" %>
+<h1>Relatório de vendas</h1>
+<div class="filtros">
+  <% Admin::ReportsController::PERIODS.each do |period, (label, _days)| %>
+    <%= link_to label, admin_report_path(period: period), class: ("ativo" if @period == period && params[:from].blank?) %>
+  <% end %>
+</div>
+<%= form_with url: admin_report_path, method: :get, class: "inline", html: { style: "display:flex;flex-wrap:wrap;margin-bottom:16px" } do |f| %>
+  <%= f.label :from, "De", style: "margin:0" %><%= f.date_field :from, value: @from %>
+  <%= f.label :to, "até", style: "margin:0" %><%= f.date_field :to, value: @to %>
+  <%= f.button "Filtrar", class: "btn sec pequeno", name: nil %>
+  <%= link_to "⬇ Exportar CSV", admin_report_path(format: :csv, from: @from, to: @to), class: "btn pequeno" %>
+<% end %>
+<div class="cards">
+  <div class="card"><b><%= brl @report[:total] %></b><span>Total vendido (pedidos concluídos)</span></div>
+  <div class="card"><b><%= @report[:orders_count] %></b><span>Pedidos concluídos</span></div>
+  <div class="card"><b><%= brl(@report[:orders_count].positive? ? @report[:total] / @report[:orders_count] : 0) %></b><span>Ticket médio</span></div>
+</div>
+<h2>Sabores mais vendidos</h2>
+<% if @report[:best_sellers].any? %>
+  <div class="tabela"><table>
+    <tr><th>Sabor</th><th>Unidades</th><th>Valor</th></tr>
+    <% @report[:best_sellers].each do |name, quantity, amount| %><tr><td><%= name %></td><td><%= quantity %></td><td><%= brl amount %></td></tr><% end %>
+  </table></div>
+<% else %>
+  <p class="ajuda">Nenhum pedido concluído no período.</p>
+<% end %>
+<h2>Avaliações recentes</h2>
+<% @reviews.each do |review| %>
+  <div class="card" style="margin-bottom:8px">
+    <b><%= review.cupcake.name %></b> · Cupcake <%= "★" * review.rating %> · Entrega <%= "★" * review.delivery_rating %><br>
+    <%= review.comment.presence || "(sem comentário)" %> <span class="ajuda">— <%= review.user.name %>, <%= l review.created_at %></span>
+  </div>
+<% end %>
+<% if @reviews.empty? %><p class="ajuda">Ainda não há avaliações.</p><% end %>

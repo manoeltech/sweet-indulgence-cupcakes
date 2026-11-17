@@ -33,7 +33,7 @@ module Authentication
     return if signed_in?
 
     # Só volta para páginas GET: voltar para a URL de um formulário (POST) daria 404.
-    return_to = request.get? ? request.fullpath : nil
+    return_to = request.fullpath if request.get? || request.head?
     redirect_to new_session_path(return_to: return_to), warning: "Entre na sua conta para continuar."
   end
 
@@ -63,6 +63,9 @@ module Authentication
   end
 
   def home_path_for(user)
-    user.admin? ? admin_root_path : root_path
+    if user.admin? then admin_root_path
+    elsif user.courier? then courier_root_path
+    else root_path
+    end
   end
 end

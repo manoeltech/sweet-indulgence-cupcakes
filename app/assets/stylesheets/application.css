@@ -95,9 +95,9 @@ th{background:var(--rosa-claro);font-size:.82rem;text-transform:uppercase;letter
 .timeline li.feito{color:var(--tinta);font-weight:700}
 .timeline li.feito::before{background:var(--rosa);border-color:var(--rosa)}
 .status{display:inline-block;font-size:.78rem;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--rosa-claro);color:var(--rosa-esc);white-space:nowrap}
-.status.cancelado{background:var(--erro-bg);color:var(--erro)}
-.status.entregue{background:var(--ok-bg);color:var(--ok)}
-.status.aguardando_pagamento{background:var(--aviso-bg);color:var(--aviso)}
+.status.canceled{background:var(--erro-bg);color:var(--erro)}
+.status.delivered,.status.ok{background:var(--ok-bg);color:var(--ok)}
+.status.awaiting_payment{background:var(--aviso-bg);color:var(--aviso)}
 .cards{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:18px}
 .cards .card b{display:block;font-size:1.6rem}
 .cards .card span{color:var(--suave);font-size:.85rem}
