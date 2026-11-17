@@ -43,6 +43,17 @@ Rails.application.routes.draw do
     end
   end
 
+  # Entregador (US16, US17, US18)
+  namespace :courier, path: "entregador" do
+    root "deliveries#index"
+    resources :deliveries, only: %i[index show], path: "entregas" do
+      scope module: :deliveries do
+        resource :contact, only: :create, path: "contato"
+        resource :completion, only: :create, path: "entregue"
+      end
+    end
+  end
+
   # Conta do usuário
   get "entrar" => "sessions#new", as: :new_session
   post "entrar" => "sessions#create", as: :session
