@@ -93,6 +93,18 @@ class OrderTest < ActiveSupport::TestCase
     assert_equal "Não é possível passar de “Pagamento aprovado” para “Entregue”.", error.message
   end
 
+  test "próximos passos dependem de entrega ou retirada" do
+    delivery = place_order
+    delivery.advance_to!("preparing")
+    pickup = Order.place!(customer: users(:cliente), cart: { cupcakes(:morango).id => 1 }, fulfillment: "pickup",
+                          payment_method: "credit", card: APPROVED_CARD)
+    pickup.advance_to!("preparing")
+
+    assert_equal %w[out_for_delivery canceled], delivery.next_statuses
+    assert_equal %w[ready_for_pickup canceled], pickup.next_statuses
+    assert_raises(BusinessRuleError) { pickup.advance_to!("out_for_delivery") }
+  end
+
   test "cancelar devolve o estoque (US12 RN#2)" do
     order = place_order
     order.advance_to!("canceled")

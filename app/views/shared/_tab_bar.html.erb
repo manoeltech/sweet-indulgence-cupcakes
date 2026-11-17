@@ -1,4 +1,13 @@
 <%# Barra inferior do celular (wireframe: Início, Favoritos, Carrinho, Pedidos, Perfil). %>
-<%= tab_link "🏠", "Início", root_path %>
-<%= tab_link "♡", "Favoritos", favorites_path %>
-<%= tab_link "👤", "Perfil", signed_in? ? profile_path : new_session_path, active: controller_name.in?(%w[profiles sessions registrations notifications]) %>
+<% if current_user&.admin? %>
+  <%= render "shared/admin_tabs" %>
+<% elsif current_user&.courier? %>
+  <%= tab_link "🛵", "Entregas", courier_root_path, active: controller_path.start_with?("courier") %>
+  <%= tab_link "👤", "Perfil", profile_path %>
+<% else %>
+  <%= tab_link "🏠", "Início", root_path %>
+  <%= tab_link "♡", "Favoritos", favorites_path %>
+  <%= tab_link "🛍️", "Carrinho", cart_path %>
+  <%= tab_link "📦", "Pedidos", orders_path, active: controller_path.start_with?("orders") %>
+  <%= tab_link "👤", "Perfil", signed_in? ? profile_path : new_session_path, active: controller_name.in?(%w[profiles sessions registrations notifications]) %>
+<% end %>

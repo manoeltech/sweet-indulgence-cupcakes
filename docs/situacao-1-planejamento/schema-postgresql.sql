@@ -1,175 +1,440 @@
--- Projeto físico do banco (PostgreSQL), gerado a partir dos models SQLAlchemy
+-- Projeto físico do banco (PostgreSQL), gerado com pg_dump a partir das migrations do Rails.
+-- Para criar do zero: bin/rails db:prepare
 
-CREATE TABLE categorias (
-	id SERIAL NOT NULL, 
-	nome VARCHAR(60) NOT NULL, 
-	slug VARCHAR(60) NOT NULL, 
-	PRIMARY KEY (id), 
-	UNIQUE (nome), 
-	UNIQUE (slug)
+CREATE TABLE public.addresses (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    street character varying(160) NOT NULL,
+    number character varying(10) NOT NULL,
+    district character varying(80) NOT NULL,
+    zip_code character varying(9) NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
-CREATE TABLE cupons (
-	id SERIAL NOT NULL, 
-	codigo VARCHAR(30) NOT NULL, 
-	descricao VARCHAR(120) NOT NULL, 
-	percentual INTEGER NOT NULL, 
-	validade DATE NOT NULL, 
-	limite_usos INTEGER, 
-	usos INTEGER NOT NULL, 
-	ativo BOOLEAN NOT NULL, 
-	PRIMARY KEY (id), 
-	CONSTRAINT ck_cupom_percentual CHECK (percentual BETWEEN 1 AND 90), 
-	UNIQUE (codigo)
+CREATE SEQUENCE public.addresses_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE public.addresses_id_seq OWNED BY public.addresses.id;
+
+CREATE TABLE public.ar_internal_metadata (
+    key character varying NOT NULL,
+    value character varying,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
-CREATE TABLE usuarios (
-	id SERIAL NOT NULL, 
-	nome VARCHAR(120) NOT NULL, 
-	email VARCHAR(160) NOT NULL, 
-	telefone VARCHAR(20), 
-	senha_hash VARCHAR(255) NOT NULL, 
-	papel VARCHAR(20) NOT NULL, 
-	notificacoes_ativas BOOLEAN NOT NULL, 
-	criado_em TIMESTAMP WITHOUT TIME ZONE NOT NULL, 
-	PRIMARY KEY (id)
+CREATE TABLE public.categories (
+    id bigint NOT NULL,
+    name character varying(60) NOT NULL,
+    slug character varying(60) NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
-CREATE UNIQUE INDEX ix_usuarios_email ON usuarios (email);
+CREATE SEQUENCE public.categories_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
-CREATE TABLE zonas_entrega (
-	id SERIAL NOT NULL, 
-	nome VARCHAR(80) NOT NULL, 
-	taxa NUMERIC(6, 2) NOT NULL, 
-	prazo_min INTEGER NOT NULL, 
-	PRIMARY KEY (id), 
-	UNIQUE (nome)
+ALTER SEQUENCE public.categories_id_seq OWNED BY public.categories.id;
+
+CREATE TABLE public.contact_logs (
+    id bigint NOT NULL,
+    order_id bigint NOT NULL,
+    courier_id bigint NOT NULL,
+    channel character varying(10) NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
-CREATE TABLE cupcakes (
-	id SERIAL NOT NULL, 
-	categoria_id INTEGER NOT NULL, 
-	nome VARCHAR(80) NOT NULL, 
-	descricao TEXT NOT NULL, 
-	ingredientes TEXT NOT NULL, 
-	preco NUMERIC(8, 2) NOT NULL, 
-	estoque INTEGER NOT NULL, 
-	estoque_minimo INTEGER NOT NULL, 
-	calorias INTEGER, 
-	gorduras_g NUMERIC(5, 1), 
-	acucares_g NUMERIC(5, 1), 
-	alergenos VARCHAR(200) NOT NULL, 
-	cor VARCHAR(7) NOT NULL, 
-	ativo BOOLEAN NOT NULL, 
-	criado_em TIMESTAMP WITHOUT TIME ZONE NOT NULL, 
-	PRIMARY KEY (id), 
-	CONSTRAINT ck_cupcake_preco_positivo CHECK (preco > 0), 
-	CONSTRAINT ck_cupcake_estoque_nao_negativo CHECK (estoque >= 0), 
-	FOREIGN KEY(categoria_id) REFERENCES categorias (id)
+CREATE SEQUENCE public.contact_logs_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE public.contact_logs_id_seq OWNED BY public.contact_logs.id;
+
+CREATE TABLE public.coupons (
+    id bigint NOT NULL,
+    code character varying(30) NOT NULL,
+    description character varying(120) DEFAULT ''::character varying NOT NULL,
+    percentage integer NOT NULL,
+    valid_until date NOT NULL,
+    usage_limit integer,
+    uses_count integer DEFAULT 0 NOT NULL,
+    active boolean DEFAULT true NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    CONSTRAINT coupons_percentage_range CHECK (((percentage >= 1) AND (percentage <= 90)))
 );
 
-CREATE TABLE enderecos (
-	id SERIAL NOT NULL, 
-	usuario_id INTEGER NOT NULL, 
-	rua VARCHAR(160) NOT NULL, 
-	numero VARCHAR(10) NOT NULL, 
-	bairro VARCHAR(80) NOT NULL, 
-	cep VARCHAR(9) NOT NULL, 
-	PRIMARY KEY (id), 
-	FOREIGN KEY(usuario_id) REFERENCES usuarios (id)
+CREATE SEQUENCE public.coupons_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE public.coupons_id_seq OWNED BY public.coupons.id;
+
+CREATE TABLE public.cupcakes (
+    id bigint NOT NULL,
+    category_id bigint NOT NULL,
+    name character varying(80) NOT NULL,
+    description text NOT NULL,
+    ingredients text DEFAULT ''::text NOT NULL,
+    price numeric(8,2) NOT NULL,
+    stock integer DEFAULT 0 NOT NULL,
+    min_stock integer DEFAULT 5 NOT NULL,
+    calories integer,
+    fat_grams numeric(5,1),
+    sugar_grams numeric(5,1),
+    allergens character varying(200) DEFAULT ''::character varying NOT NULL,
+    color character varying(7) DEFAULT '#f9a8d4'::character varying NOT NULL,
+    active boolean DEFAULT true NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    CONSTRAINT cupcakes_price_positive CHECK ((price > (0)::numeric)),
+    CONSTRAINT cupcakes_stock_not_negative CHECK ((stock >= 0))
 );
 
-CREATE TABLE pedidos (
-	id SERIAL NOT NULL, 
-	codigo VARCHAR(12) NOT NULL, 
-	cliente_id INTEGER NOT NULL, 
-	entregador_id INTEGER, 
-	cupom_id INTEGER, 
-	zona_id INTEGER, 
-	status VARCHAR(30) NOT NULL, 
-	metodo_entrega VARCHAR(10) NOT NULL, 
-	endereco_entrega VARCHAR(255), 
-	metodo_pagamento VARCHAR(10) NOT NULL, 
-	cartao_final VARCHAR(4), 
-	pix_copia_cola VARCHAR(255), 
-	subtotal NUMERIC(10, 2) NOT NULL, 
-	desconto NUMERIC(10, 2) NOT NULL, 
-	frete NUMERIC(10, 2) NOT NULL, 
-	total NUMERIC(10, 2) NOT NULL, 
-	criado_em TIMESTAMP WITHOUT TIME ZONE NOT NULL, 
-	atualizado_em TIMESTAMP WITHOUT TIME ZONE NOT NULL, 
-	PRIMARY KEY (id), 
-	UNIQUE (codigo), 
-	FOREIGN KEY(cliente_id) REFERENCES usuarios (id), 
-	FOREIGN KEY(entregador_id) REFERENCES usuarios (id), 
-	FOREIGN KEY(cupom_id) REFERENCES cupons (id), 
-	FOREIGN KEY(zona_id) REFERENCES zonas_entrega (id)
+CREATE SEQUENCE public.cupcakes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE public.cupcakes_id_seq OWNED BY public.cupcakes.id;
+
+CREATE TABLE public.delivery_zones (
+    id bigint NOT NULL,
+    name character varying(80) NOT NULL,
+    fee numeric(6,2) NOT NULL,
+    eta_minutes integer DEFAULT 45 NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    CONSTRAINT delivery_zones_fee_not_negative CHECK ((fee >= (0)::numeric))
 );
 
-CREATE INDEX ix_pedidos_criado_em ON pedidos (criado_em);
+CREATE SEQUENCE public.delivery_zones_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
-CREATE INDEX ix_pedidos_status ON pedidos (status);
+ALTER SEQUENCE public.delivery_zones_id_seq OWNED BY public.delivery_zones.id;
 
-CREATE TABLE avaliacoes (
-	id SERIAL NOT NULL, 
-	usuario_id INTEGER NOT NULL, 
-	cupcake_id INTEGER NOT NULL, 
-	pedido_id INTEGER NOT NULL, 
-	nota INTEGER NOT NULL, 
-	nota_entrega INTEGER NOT NULL, 
-	comentario TEXT NOT NULL, 
-	criado_em TIMESTAMP WITHOUT TIME ZONE NOT NULL, 
-	PRIMARY KEY (id), 
-	CONSTRAINT uq_avaliacao_por_item UNIQUE (usuario_id, pedido_id, cupcake_id), 
-	CONSTRAINT ck_avaliacao_nota CHECK (nota BETWEEN 1 AND 5), 
-	CONSTRAINT ck_avaliacao_nota_entrega CHECK (nota_entrega BETWEEN 1 AND 5), 
-	FOREIGN KEY(usuario_id) REFERENCES usuarios (id), 
-	FOREIGN KEY(cupcake_id) REFERENCES cupcakes (id), 
-	FOREIGN KEY(pedido_id) REFERENCES pedidos (id)
+CREATE TABLE public.favorites (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    cupcake_id bigint NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
-CREATE TABLE favoritos (
-	usuario_id INTEGER NOT NULL, 
-	cupcake_id INTEGER NOT NULL, 
-	criado_em TIMESTAMP WITHOUT TIME ZONE NOT NULL, 
-	PRIMARY KEY (usuario_id, cupcake_id), 
-	FOREIGN KEY(usuario_id) REFERENCES usuarios (id), 
-	FOREIGN KEY(cupcake_id) REFERENCES cupcakes (id)
+CREATE SEQUENCE public.favorites_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE public.favorites_id_seq OWNED BY public.favorites.id;
+
+CREATE TABLE public.notifications (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    order_id bigint,
+    message character varying(255) NOT NULL,
+    read boolean DEFAULT false NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
-CREATE TABLE itens_pedido (
-	id SERIAL NOT NULL, 
-	pedido_id INTEGER NOT NULL, 
-	cupcake_id INTEGER NOT NULL, 
-	quantidade INTEGER NOT NULL, 
-	preco_unitario NUMERIC(8, 2) NOT NULL, 
-	PRIMARY KEY (id), 
-	CONSTRAINT ck_item_quantidade CHECK (quantidade > 0), 
-	FOREIGN KEY(pedido_id) REFERENCES pedidos (id), 
-	FOREIGN KEY(cupcake_id) REFERENCES cupcakes (id)
+CREATE SEQUENCE public.notifications_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE public.notifications_id_seq OWNED BY public.notifications.id;
+
+CREATE TABLE public.order_items (
+    id bigint NOT NULL,
+    order_id bigint NOT NULL,
+    cupcake_id bigint NOT NULL,
+    quantity integer NOT NULL,
+    unit_price numeric(8,2) NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    CONSTRAINT order_items_quantity_positive CHECK ((quantity > 0))
 );
 
-CREATE TABLE notificacoes (
-	id SERIAL NOT NULL, 
-	usuario_id INTEGER NOT NULL, 
-	pedido_id INTEGER, 
-	mensagem VARCHAR(255) NOT NULL, 
-	lida BOOLEAN NOT NULL, 
-	criado_em TIMESTAMP WITHOUT TIME ZONE NOT NULL, 
-	PRIMARY KEY (id), 
-	FOREIGN KEY(usuario_id) REFERENCES usuarios (id), 
-	FOREIGN KEY(pedido_id) REFERENCES pedidos (id)
+CREATE SEQUENCE public.order_items_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE public.order_items_id_seq OWNED BY public.order_items.id;
+
+CREATE TABLE public.orders (
+    id bigint NOT NULL,
+    code character varying(12) NOT NULL,
+    customer_id bigint NOT NULL,
+    courier_id bigint,
+    coupon_id bigint,
+    delivery_zone_id bigint,
+    status character varying(30) DEFAULT 'paid'::character varying NOT NULL,
+    fulfillment character varying(10) NOT NULL,
+    delivery_address character varying(255),
+    payment_method character varying(10) NOT NULL,
+    card_last4 character varying(4),
+    pix_code character varying(255),
+    subtotal numeric(10,2) NOT NULL,
+    discount numeric(10,2) DEFAULT 0.0 NOT NULL,
+    shipping_fee numeric(10,2) DEFAULT 0.0 NOT NULL,
+    total numeric(10,2) NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    CONSTRAINT orders_total_not_negative CHECK ((total >= (0)::numeric))
 );
 
-CREATE INDEX ix_notificacoes_usuario_id ON notificacoes (usuario_id);
+CREATE SEQUENCE public.orders_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
-CREATE TABLE registros_contato (
-	id SERIAL NOT NULL, 
-	pedido_id INTEGER NOT NULL, 
-	entregador_id INTEGER NOT NULL, 
-	meio VARCHAR(10) NOT NULL, 
-	criado_em TIMESTAMP WITHOUT TIME ZONE NOT NULL, 
-	PRIMARY KEY (id), 
-	FOREIGN KEY(pedido_id) REFERENCES pedidos (id), 
-	FOREIGN KEY(entregador_id) REFERENCES usuarios (id)
+ALTER SEQUENCE public.orders_id_seq OWNED BY public.orders.id;
+
+CREATE TABLE public.reviews (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    order_id bigint NOT NULL,
+    cupcake_id bigint NOT NULL,
+    rating integer NOT NULL,
+    delivery_rating integer NOT NULL,
+    comment text DEFAULT ''::text NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    CONSTRAINT reviews_delivery_rating_range CHECK (((delivery_rating >= 1) AND (delivery_rating <= 5))),
+    CONSTRAINT reviews_rating_range CHECK (((rating >= 1) AND (rating <= 5)))
 );
+
+CREATE SEQUENCE public.reviews_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE public.reviews_id_seq OWNED BY public.reviews.id;
+
+CREATE TABLE public.schema_migrations (
+    version character varying NOT NULL
+);
+
+CREATE TABLE public.users (
+    id bigint NOT NULL,
+    name character varying(120) NOT NULL,
+    email character varying(160) NOT NULL,
+    phone character varying(20),
+    password_digest character varying NOT NULL,
+    role character varying(20) DEFAULT 'customer'::character varying NOT NULL,
+    notifications_enabled boolean DEFAULT true NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    CONSTRAINT users_role_valid CHECK (((role)::text = ANY (ARRAY[('customer'::character varying)::text, ('admin'::character varying)::text, ('courier'::character varying)::text])))
+);
+
+CREATE SEQUENCE public.users_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+ALTER TABLE ONLY public.addresses ALTER COLUMN id SET DEFAULT nextval('public.addresses_id_seq'::regclass);
+
+ALTER TABLE ONLY public.categories ALTER COLUMN id SET DEFAULT nextval('public.categories_id_seq'::regclass);
+
+ALTER TABLE ONLY public.contact_logs ALTER COLUMN id SET DEFAULT nextval('public.contact_logs_id_seq'::regclass);
+
+ALTER TABLE ONLY public.coupons ALTER COLUMN id SET DEFAULT nextval('public.coupons_id_seq'::regclass);
+
+ALTER TABLE ONLY public.cupcakes ALTER COLUMN id SET DEFAULT nextval('public.cupcakes_id_seq'::regclass);
+
+ALTER TABLE ONLY public.delivery_zones ALTER COLUMN id SET DEFAULT nextval('public.delivery_zones_id_seq'::regclass);
+
+ALTER TABLE ONLY public.favorites ALTER COLUMN id SET DEFAULT nextval('public.favorites_id_seq'::regclass);
+
+ALTER TABLE ONLY public.notifications ALTER COLUMN id SET DEFAULT nextval('public.notifications_id_seq'::regclass);
+
+ALTER TABLE ONLY public.order_items ALTER COLUMN id SET DEFAULT nextval('public.order_items_id_seq'::regclass);
+
+ALTER TABLE ONLY public.orders ALTER COLUMN id SET DEFAULT nextval('public.orders_id_seq'::regclass);
+
+ALTER TABLE ONLY public.reviews ALTER COLUMN id SET DEFAULT nextval('public.reviews_id_seq'::regclass);
+
+ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
+ALTER TABLE ONLY public.addresses
+    ADD CONSTRAINT addresses_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY public.ar_internal_metadata
+    ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
+
+ALTER TABLE ONLY public.categories
+    ADD CONSTRAINT categories_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY public.contact_logs
+    ADD CONSTRAINT contact_logs_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY public.coupons
+    ADD CONSTRAINT coupons_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY public.cupcakes
+    ADD CONSTRAINT cupcakes_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY public.delivery_zones
+    ADD CONSTRAINT delivery_zones_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY public.favorites
+    ADD CONSTRAINT favorites_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY public.notifications
+    ADD CONSTRAINT notifications_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY public.order_items
+    ADD CONSTRAINT order_items_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY public.orders
+    ADD CONSTRAINT orders_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY public.reviews
+    ADD CONSTRAINT reviews_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY public.schema_migrations
+    ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+CREATE INDEX index_addresses_on_user_id ON public.addresses USING btree (user_id);
+
+CREATE UNIQUE INDEX index_categories_on_name ON public.categories USING btree (name);
+
+CREATE UNIQUE INDEX index_categories_on_slug ON public.categories USING btree (slug);
+
+CREATE INDEX index_contact_logs_on_courier_id ON public.contact_logs USING btree (courier_id);
+
+CREATE INDEX index_contact_logs_on_order_id ON public.contact_logs USING btree (order_id);
+
+CREATE UNIQUE INDEX index_coupons_on_code ON public.coupons USING btree (code);
+
+CREATE INDEX index_cupcakes_on_category_id ON public.cupcakes USING btree (category_id);
+
+CREATE UNIQUE INDEX index_delivery_zones_on_name ON public.delivery_zones USING btree (name);
+
+CREATE INDEX index_favorites_on_cupcake_id ON public.favorites USING btree (cupcake_id);
+
+CREATE UNIQUE INDEX index_favorites_on_user_id_and_cupcake_id ON public.favorites USING btree (user_id, cupcake_id);
+
+CREATE INDEX index_notifications_on_order_id ON public.notifications USING btree (order_id);
+
+CREATE INDEX index_notifications_on_user_id ON public.notifications USING btree (user_id);
+
+CREATE INDEX index_order_items_on_cupcake_id ON public.order_items USING btree (cupcake_id);
+
+CREATE INDEX index_order_items_on_order_id ON public.order_items USING btree (order_id);
+
+CREATE UNIQUE INDEX index_orders_on_code ON public.orders USING btree (code);
+
+CREATE INDEX index_orders_on_coupon_id ON public.orders USING btree (coupon_id);
+
+CREATE INDEX index_orders_on_courier_id ON public.orders USING btree (courier_id);
+
+CREATE INDEX index_orders_on_created_at ON public.orders USING btree (created_at);
+
+CREATE INDEX index_orders_on_customer_id ON public.orders USING btree (customer_id);
+
+CREATE INDEX index_orders_on_delivery_zone_id ON public.orders USING btree (delivery_zone_id);
+
+CREATE INDEX index_orders_on_status ON public.orders USING btree (status);
+
+CREATE INDEX index_reviews_on_cupcake_id ON public.reviews USING btree (cupcake_id);
+
+CREATE UNIQUE INDEX index_reviews_on_order_id_and_cupcake_id ON public.reviews USING btree (order_id, cupcake_id);
+
+CREATE INDEX index_reviews_on_user_id ON public.reviews USING btree (user_id);
+
+CREATE UNIQUE INDEX index_users_on_email ON public.users USING btree (email);
+
+ALTER TABLE ONLY public.reviews
+    ADD CONSTRAINT fk_rails_19aaeaff7c FOREIGN KEY (cupcake_id) REFERENCES public.cupcakes(id);
+
+ALTER TABLE ONLY public.orders
+    ADD CONSTRAINT fk_rails_2540dc0df6 FOREIGN KEY (delivery_zone_id) REFERENCES public.delivery_zones(id);
+
+ALTER TABLE ONLY public.orders
+    ADD CONSTRAINT fk_rails_3dad120da9 FOREIGN KEY (customer_id) REFERENCES public.users(id);
+
+ALTER TABLE ONLY public.addresses
+    ADD CONSTRAINT fk_rails_48c9e0c5a2 FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+ALTER TABLE ONLY public.orders
+    ADD CONSTRAINT fk_rails_56bfd737ed FOREIGN KEY (courier_id) REFERENCES public.users(id);
+
+ALTER TABLE ONLY public.contact_logs
+    ADD CONSTRAINT fk_rails_571486b730 FOREIGN KEY (order_id) REFERENCES public.orders(id);
+
+ALTER TABLE ONLY public.order_items
+    ADD CONSTRAINT fk_rails_69840110e1 FOREIGN KEY (cupcake_id) REFERENCES public.cupcakes(id);
+
+ALTER TABLE ONLY public.reviews
+    ADD CONSTRAINT fk_rails_74a66bd6c5 FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+ALTER TABLE ONLY public.orders
+    ADD CONSTRAINT fk_rails_907a5e9f62 FOREIGN KEY (coupon_id) REFERENCES public.coupons(id);
+
+ALTER TABLE ONLY public.favorites
+    ADD CONSTRAINT fk_rails_a0bd012b8a FOREIGN KEY (cupcake_id) REFERENCES public.cupcakes(id);
+
+ALTER TABLE ONLY public.notifications
+    ADD CONSTRAINT fk_rails_b080fb4855 FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+ALTER TABLE ONLY public.cupcakes
+    ADD CONSTRAINT fk_rails_c0d3fd6122 FOREIGN KEY (category_id) REFERENCES public.categories(id);
+
+ALTER TABLE ONLY public.favorites
+    ADD CONSTRAINT fk_rails_d15744e438 FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+ALTER TABLE ONLY public.order_items
+    ADD CONSTRAINT fk_rails_e3cb28f071 FOREIGN KEY (order_id) REFERENCES public.orders(id);
+
+ALTER TABLE ONLY public.reviews
+    ADD CONSTRAINT fk_rails_eadb6874f1 FOREIGN KEY (order_id) REFERENCES public.orders(id);
+
+ALTER TABLE ONLY public.contact_logs
+    ADD CONSTRAINT fk_rails_f3f2a8edf7 FOREIGN KEY (courier_id) REFERENCES public.users(id);
+
+ALTER TABLE ONLY public.notifications
+    ADD CONSTRAINT fk_rails_fd5a31cf2f FOREIGN KEY (order_id) REFERENCES public.orders(id);
+
