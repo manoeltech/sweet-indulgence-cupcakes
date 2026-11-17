@@ -41,7 +41,7 @@
     <% if item.cupcake_id.in?(@reviewed_cupcake_ids) %>
       <p class="card">✅ <%= item.cupcake.name %> já avaliado. Obrigado!</p>
     <% else %>
-      <%= form_with model: Review.new, url: order_reviews_path(@order), class: "card", style: "margin-bottom:10px" do |f| %>
+      <%= form_with model: Review.new, url: order_reviews_path(@order), class: "card", html: { style: "margin-bottom:10px" } do |f| %>
         <%= f.hidden_field :cupcake_id, value: item.cupcake_id %>
         <b><%= item.cupcake.name %></b>
         <div class="duas" style="grid-template-columns:1fr 1fr;gap:10px">

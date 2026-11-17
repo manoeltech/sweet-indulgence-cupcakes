@@ -1,8 +1,10 @@
 class Cupcake < ApplicationRecord
-  belongs_to :category
+  # A mensagem padrão do belongs_to ("é obrigatório(a)") não diz qual campo falta.
+  belongs_to :category, optional: true
   has_many :reviews, dependent: :destroy
   has_many :order_items, dependent: :restrict_with_error
 
+  validates :category, presence: { message: "Escolha uma categoria." }
   validates :name, presence: { message: "Informe o nome do cupcake." }
   validates :description, presence: { message: "Informe a descrição." }
   validates :price, numericality: { greater_than: 0, message: "O preço precisa ser maior que zero." }
@@ -11,6 +13,11 @@ class Cupcake < ApplicationRecord
   validates :calories, numericality: { only_integer: true, greater_than_or_equal_to: 0, message: "Calorias precisam ser um número inteiro." }, allow_nil: true
   validates :fat_grams, :sugar_grams, numericality: { greater_than_or_equal_to: 0, message: "Informações nutricionais precisam ser números." }, allow_nil: true
   validates :color, format: { with: /\A#\h{6}\z/, message: "Cor inválida." }
+
+  # O administrador digita "12,50": vírgula decimal vira ponto antes de converter.
+  %i[price fat_grams sugar_grams].each do |attribute|
+    define_method(:"#{attribute}=") { |value| super(value.is_a?(String) ? value.strip.tr(",", ".") : value) }
+  end
 
   scope :active, -> { where(active: true) }
   scope :in_stock, -> { where("stock > 0") }
