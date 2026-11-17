@@ -58,4 +58,21 @@ class Courier::DeliveriesTest < ActionDispatch::IntegrationTest
     assert @order.reload.delivered?
     assert_equal "Pedido ##{@order.code}: Entregue.", users(:cliente).notifications.recent_first.first.message
   end
+
+  test "pedido atribuído e ainda em preparação aparece na lista, mas só abre depois de sair" do
+    em_preparacao = place_order
+    em_preparacao.advance_to!("preparing")
+    em_preparacao.assign_courier!(users(:entregador))
+    sign_in_as users(:entregador)
+
+    get courier_deliveries_path
+    assert_select "a.card", /##{@order.code}/
+    assert_select "[data-teste=aguardando-sair]", /##{em_preparacao.code}.*Em preparação.*Saiu para entrega/m
+    assert_select "a[href=?]", courier_delivery_path(em_preparacao), count: 0
+
+    get courier_delivery_path(em_preparacao)
+    assert_response :not_found
+    post courier_delivery_completion_path(em_preparacao), params: { confirmed: "1" }
+    assert em_preparacao.reload.preparing?
+  end
 end
