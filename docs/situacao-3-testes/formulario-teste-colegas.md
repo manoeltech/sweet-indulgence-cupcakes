@@ -2,8 +2,10 @@
 
 Olá! Obrigado por testar meu Projeto Integrador. Leva uns 10 minutos.
 
-**Link da aplicação:** _(colocar o link do Render aqui)_
+**Link da aplicação:** https://sweet-indulgence-cupcakes.onrender.com
 **Use de preferência o celular.**
+
+> O site fica numa hospedagem gratuita que "dorme" quando ninguém usa. Se demorar para abrir, espere até 1 minuto: depois disso ele fica rápido.
 
 ## Contas para usar (senha `cupcake123`)
 - Cliente: `cliente@sweetindulgence.com` (ou crie a sua própria conta)
