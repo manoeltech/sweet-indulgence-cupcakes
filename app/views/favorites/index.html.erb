@@ -1,0 +1,10 @@
+<% content_for :title, "Favoritos" %>
+<h1>Meus favoritos</h1>
+<% if @cupcakes.any? %>
+  <div class="grade"><%= render partial: "cupcakes/cupcake", collection: @cupcakes %></div>
+<% else %>
+  <div class="vazio">
+    <p>Você ainda não favoritou nenhum cupcake. Toque no ♡ para guardar os seus preferidos.</p>
+    <%= link_to "Ver vitrine", root_path, class: "btn" %>
+  </div>
+<% end %>

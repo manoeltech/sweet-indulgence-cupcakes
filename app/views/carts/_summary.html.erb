@@ -1,0 +1,7 @@
+<table class="resumo" style="margin-top:14px;background:none">
+  <tr><td>Subtotal</td><td style="text-align:right"><%= brl cart.subtotal %></td></tr>
+  <% if cart.coupon %><tr><td>Desconto</td><td style="text-align:right">− <%= brl cart.discount %></td></tr><% end %>
+  <% if cart.coupon_error %><tr><td colspan="2" class="msg-erro"><%= cart.coupon_error %></td></tr><% end %>
+  <tr><td>Frete</td><td style="text-align:right" class="ajuda">calculado no checkout</td></tr>
+  <tr class="total"><td>Total</td><td style="text-align:right"><%= brl cart.total %></td></tr>
+</table>
